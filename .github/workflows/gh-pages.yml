@@ -18,7 +18,8 @@ jobs:
       - name: Build 🚜
         uses: ammaraskar/sphinx-action@master
         with:
-          docs-folder: "docs/"
+          pre-build-command: apt-get update --yes && apt-get install --yes libxmlsec1-dev libxml2-dev libxmlsec1-openssl
+          docs-folder: docs/
 
       # Only deploy when pushing
       - name: Deploy docs to GitHub pages 🚀
