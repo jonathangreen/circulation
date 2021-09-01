@@ -151,38 +151,3 @@ class ProfileStorage(object):
         raise NotImplementedError()
 
 
-class MockProfileStorage(ProfileStorage):
-    """A profile storage object for use in tests.
-
-    Keeps information in in-memory dictionaries rather than in a database.
-    """
-
-    def __init__(self, read_only_settings=None, writable_settings=None):
-        """Create a profile for a simulated user.
-
-        :param read_only_settings: A dictionary of values that cannot be
-            changed.
-
-        :param writable_settings: A dictionary of values that can be changed
-            through the User Profile Management Protocol.
-        """
-        self.read_only_settings = read_only_settings or dict()
-        self.writable_settings = writable_settings or dict()
-
-    @property
-    def profile_document(self):
-        body = dict(self.read_only_settings)
-        body[self.SETTINGS_KEY] = dict(self.writable_settings)
-        return body
-
-    def update(self, new_values, profile_document):
-        """(Try to) change the user's profile so it looks like the provided
-        Profile document.
-        """
-        for k, v in list(new_values.items()):
-            self.writable_settings[k] = v
-
-    @property
-    def writable_setting_names(self):
-        """Return the subset of fields that are considered writable."""
-        return list(self.writable_settings.keys())

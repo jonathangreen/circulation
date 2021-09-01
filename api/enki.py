@@ -1,13 +1,8 @@
 import time
 import datetime
-import os
 import json
 import logging
 from flask_babel import lazy_gettext as _
-
-from .config import (
-    CannotLoadConfiguration,
-)
 
 from .circulation import (
     LoanInfo,
@@ -39,7 +34,6 @@ from core.model import (
     ExternalIntegration,
     Hyperlink,
     Identifier,
-    LicensePool,
     Representation,
     Session,
     Subject,
@@ -57,14 +51,12 @@ from core.metadata_layer import (
 )
 
 from core.monitor import (
-    Monitor,
     IdentifierSweepMonitor,
     CollectionMonitor,
     TimelineMonitor,
 )
 
 from core.analytics import Analytics
-from core.testing import DatabaseTest
 from core.util.datetime_helpers import (
     from_timestamp,
     strptime_utc,
@@ -506,49 +498,6 @@ class EnkiAPI(BaseCirculationAPI, HasSelfTests):
 
     def release_hold(self, patron, pin, licensepool):
         pass
-
-
-class MockEnkiAPI(EnkiAPI):
-    def __init__(self, _db, collection=None, *args, **kwargs):
-        self.responses = []
-        self.requests = []
-
-        library = DatabaseTest.make_default_library(_db)
-        if not collection:
-            collection, ignore = Collection.by_name_and_protocol(
-                _db, name="Test Enki Collection", protocol=EnkiAPI.ENKI
-            )
-            collection.protocol=EnkiAPI.ENKI
-        if collection not in library.collections:
-            library.collections.append(collection)
-
-        # Set the "Enki library ID" variable between the default library
-        # and this Enki collection.
-        ConfigurationSetting.for_library_and_externalintegration(
-            _db, self.ENKI_LIBRARY_ID_KEY, library,
-            collection.external_integration
-        ).value = 'c'
-
-        super(MockEnkiAPI, self).__init__(
-            _db, collection, *args, **kwargs
-        )
-
-    def queue_response(self, status_code, headers={}, content=None):
-        from core.testing import MockRequestsResponse
-        self.responses.insert(
-            0, MockRequestsResponse(status_code, headers, content)
-        )
-
-    def _request(self, method, url, headers, data, params, **kwargs):
-        """Override EnkiAPI._request to pull responses from a
-        queue instead of making real HTTP requests
-        """
-        self.requests.append([method, url, headers, data, params, kwargs])
-        response = self.responses.pop()
-        return HTTP._process_response(
-            url, response, kwargs.get('allowed_response_codes'),
-            kwargs.get('disallowed_response_codes'),
-        )
 
 
 class BibliographicParser(object):

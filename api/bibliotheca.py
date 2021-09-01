@@ -3,13 +3,11 @@ from io import (
     BytesIO,
     StringIO,
 )
-import itertools
 from datetime import datetime, timedelta
 import hashlib
 import hmac
 import itertools
 import logging
-import os
 import re
 import urllib.parse
 import time
@@ -19,8 +17,6 @@ from flask_babel import lazy_gettext as _
 from lxml import etree
 from pymarc import parse_xml_to_array
 from six.moves.html_parser import HTMLParser
-from sqlalchemy import or_
-from sqlalchemy.orm.session import Session
 
 from .web_publication_manifest import (
     FindawayManifest,
@@ -37,23 +33,10 @@ from .selftest import (
     SelfTestResult,
 )
 from core.config import (
-    Configuration,
     CannotLoadConfiguration,
-    temp_config,
 )
 from core.coverage import (
     BibliographicCoverageProvider
-)
-from core.metadata_layer import (
-    ContributorData,
-    CirculationData,
-    Metadata,
-    LinkData,
-    IdentifierData,
-    FormatData,
-    MeasurementData,
-    ReplacementPolicy,
-    SubjectData,
 )
 from core.model import (
     CirculationEvent,
@@ -65,19 +48,14 @@ from core.model import (
     Edition,
     ExternalIntegration,
     get_one,
-    get_one_or_create,
-    Hold,
     Hyperlink,
     Identifier,
-    Library,
     LicensePool,
-    Loan,
     Measurement,
     Representation,
     Session,
     Subject,
     Timestamp,
-    WorkCoverageRecord,
 )
 from core.monitor import (
     CollectionMonitor,
@@ -85,10 +63,8 @@ from core.monitor import (
     TimelineMonitor,
 )
 from core.scripts import RunCollectionMonitorScript
-from core.testing import DatabaseTest
 from core.util.xmlparser import XMLParser
 from core.util.http import (
-    BadResponseException,
     HTTP
 )
 
@@ -113,7 +89,7 @@ from core.util.datetime_helpers import (
     utc_now,
 )
 from core.util.string_helpers import base64
-from core.testing import DatabaseTest
+
 
 class BibliothecaAPI(BaseCirculationAPI, HasSelfTests):
 
@@ -633,59 +609,6 @@ class DummyBibliothecaAPIResponse(object):
         self.headers = headers
         self.content = content
 
-class MockBibliothecaAPI(BibliothecaAPI):
-
-    @classmethod
-    def mock_collection(self, _db, name="Test Bibliotheca Collection"):
-        """Create a mock Bibliotheca collection for use in tests."""
-        library = DatabaseTest.make_default_library(_db)
-        collection, ignore = get_one_or_create(
-            _db, Collection,
-            name=name, create_method_kwargs=dict(
-                external_account_id='c',
-            )
-        )
-        integration = collection.create_external_integration(
-            protocol=ExternalIntegration.BIBLIOTHECA
-        )
-        integration.username = 'a'
-        integration.password = 'b'
-        integration.url = "http://bibliotheca.test"
-        library.collections.append(collection)
-        return collection
-
-    def __init__(self, _db, collection, *args, **kwargs):
-        self.responses = []
-        self.requests = []
-        super(MockBibliothecaAPI, self).__init__(
-            _db, collection, *args, **kwargs
-        )
-
-    def now(self):
-        """Return an unvarying time in the format Bibliotheca expects."""
-        return datetime.strftime(
-            datetime(2016, 1, 1), self.AUTH_TIME_FORMAT
-        )
-
-    def queue_response(self, status_code, headers={}, content=None):
-        from core.testing import MockRequestsResponse
-        self.responses.insert(
-            0, MockRequestsResponse(status_code, headers, content)
-        )
-
-    def _request_with_timeout(self, method, url, *args, **kwargs):
-        """Simulate HTTP.request_with_timeout."""
-        self.requests.append([method, url, args, kwargs])
-        response = self.responses.pop()
-        return HTTP._process_response(
-            url, response, kwargs.get('allowed_response_codes'),
-            kwargs.get('disallowed_response_codes')
-        )
-
-    def _simple_http_get(self, url, headers, *args, **kwargs):
-        """Simulate Representation.simple_http_get."""
-        response = self._request_with_timeout('GET', url, *args, **kwargs)
-        return response.status_code, response.headers, response.content
 
 class ItemListParser(XMLParser):
 

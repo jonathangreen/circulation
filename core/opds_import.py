@@ -418,39 +418,6 @@ class MetadataWranglerOPDSLookup(SimplifiedOPDSLookup, HasSelfTests):
         return self._get(url)
 
 
-class MockSimplifiedOPDSLookup(SimplifiedOPDSLookup):
-
-    def __init__(self, *args, **kwargs):
-        self.requests = []
-        self.responses = []
-        super(MockSimplifiedOPDSLookup, self).__init__(*args, **kwargs)
-
-    def queue_response(self, status_code, headers={}, content=None):
-        from .testing import MockRequestsResponse
-        self.responses.insert(
-            0, MockRequestsResponse(status_code, headers, content)
-        )
-
-    def _get(self, url, *args, **kwargs):
-        self.requests.append((url, args, kwargs))
-        response = self.responses.pop()
-        return HTTP._process_response(
-            url, response, kwargs.get('allowed_response_codes'),
-            kwargs.get('disallowed_response_codes')
-        )
-
-
-class MockMetadataWranglerOPDSLookup(MockSimplifiedOPDSLookup, MetadataWranglerOPDSLookup):
-
-    def _post(self, url, *args, **kwargs):
-        self.requests.append((url, args, kwargs))
-        response = self.responses.pop()
-        return HTTP._process_response(
-            url, response, kwargs.get('allowed_response_codes'),
-            kwargs.get('disallowed_response_codes')
-        )
-
-
 class OPDSXMLParser(XMLParser):
 
     NAMESPACES = { "simplified": "http://librarysimplified.org/terms/",

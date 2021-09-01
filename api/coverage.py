@@ -4,37 +4,12 @@ The CoverageProviders themselves are in the file corresponding to the
 service that needs coverage -- overdrive.py, metadata_wrangler.py, and
 so on.
 """
-import logging
-from lxml import etree
-from io import StringIO
 from core.coverage import (
     CoverageFailure,
     CollectionCoverageProvider,
-    WorkCoverageProvider,
-)
-from core.model import (
-    Collection,
-    ConfigurationSetting,
-    CoverageRecord,
-    DataSource,
-    Edition,
-    ExternalIntegration,
-    Identifier,
-    LicensePool,
-    WorkCoverageRecord,
-)
-from core.util.opds_writer import (
-    OPDSFeed
 )
 from core.opds_import import (
-    AccessNotAuthenticated,
-    MetadataWranglerOPDSLookup,
     OPDSImporter,
-    OPDSXMLParser,
-    SimplifiedOPDSLookup,
-)
-from core.util.http import (
-    RemoteIntegrationException,
 )
 
 
@@ -165,28 +140,3 @@ class OPDSImportCoverageProvider(CollectionCoverageProvider):
         return importer.import_from_feed(response.text)
 
 
-class MockOPDSImportCoverageProvider(OPDSImportCoverageProvider):
-
-    SERVICE_NAME = "Mock Provider"
-    DATA_SOURCE_NAME = DataSource.OA_CONTENT_SERVER
-
-    def __init__(self, collection, *args, **kwargs):
-        super(MockOPDSImportCoverageProvider, self).__init__(
-            collection, None, *args, **kwargs
-        )
-        self.batches = []
-        self.finalized = []
-        self.import_results = []
-
-    def queue_import_results(self, editions, pools, works, messages_by_id):
-        self.import_results.insert(0, (editions, pools, works, messages_by_id))
-
-    def finalize_license_pool(self, license_pool):
-        self.finalized.append(license_pool)
-        super(MockOPDSImportCoverageProvider, self).finalize_license_pool(
-            license_pool
-        )
-
-    def lookup_and_import_batch(self, batch):
-        self.batches.append(batch)
-        return self.import_results.pop()

@@ -1,15 +1,10 @@
-import flask
-from flask import Response
 from flask_babel import lazy_gettext as _
-from api.admin.problem_details import *
 from core.model import (
     ExternalIntegration
 )
 from core.external_search import ExternalSearchIndex
-from core.testing import ExternalSearchTest
+from tests.testing import ExternalSearchTest
 
-from core.selftest import HasSelfTests
-from core.util.problem_detail import ProblemDetail
 from api.admin.controller.self_tests import SelfTestsController
 
 class SearchServiceSelfTestsController(SelfTestsController, ExternalSearchTest):

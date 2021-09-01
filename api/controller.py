@@ -1,4 +1,3 @@
-import datetime
 import email
 import json
 import logging
@@ -37,7 +36,7 @@ from .authenticator import (
     OAuthController,
 )
 from .base_controller import BaseCirculationManagerController
-from .circulation import CirculationAPI, FulfillmentInfo
+from .circulation import CirculationAPI
 from .circulation_exceptions import *
 from .config import (
     Configuration,
@@ -56,9 +55,9 @@ from core.app_server import (
 from core.entrypoint import EverythingEntryPoint
 from core.external_search import (
     ExternalSearchIndex,
-    MockExternalSearchIndex,
     SortKeyPagination,
 )
+from tests.core.mock_external_search import MockExternalSearchIndex
 from core.lane import (
     BaseFacets,
     FeaturedFacets,
@@ -103,7 +102,6 @@ from core.opensearch import OpenSearchDocument
 from core.user_profile import ProfileController as CoreProfileController
 from core.util.authentication_for_opds import AuthenticationForOPDSDocument
 from core.util.datetime_helpers import (
-    from_timestamp,
     utc_now,
 )
 from core.util.http import (
@@ -141,7 +139,7 @@ from .opds import (
 )
 from .problem_details import *
 from .shared_collection import SharedCollectionAPI
-from .testing import MockCirculationAPI, MockSharedCollectionAPI
+from tests.api.testing import MockCirculationAPI, MockSharedCollectionAPI
 
 class CirculationManager(object):
 

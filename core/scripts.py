@@ -8,7 +8,6 @@ import sys
 import traceback
 import unicodedata
 import uuid
-from pdb import set_trace
 from collections import defaultdict
 from enum import Enum
 from sqlalchemy import (
@@ -3301,12 +3300,3 @@ class SearchIndexCoverageRemover(TimestampScript, RemovesSearchCoverage):
         )
 
 
-class MockStdin(object):
-    """Mock a list of identifiers passed in on standard input."""
-    def __init__(self, *lines):
-        self.lines = lines
-
-    def readlines(self):
-        lines = self.lines
-        self.lines = []
-        return lines

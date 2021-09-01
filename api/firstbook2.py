@@ -1,6 +1,5 @@
 from flask_babel import lazy_gettext as _
 import jwt
-from jwt.algorithms import HMACAlgorithm
 import requests
 import logging
 import time
@@ -10,15 +9,11 @@ from .authenticator import (
     PatronData,
 )
 from .config import (
-    Configuration,
     CannotLoadConfiguration,
 )
 from .circulation_exceptions import RemoteInitiatedServerError
-import urllib.parse
 from core.model import (
-    get_one_or_create,
     ExternalIntegration,
-    Patron,
 )
 
 class FirstBookAuthenticationAPI(BasicAuthenticationProvider):
@@ -128,70 +123,6 @@ class FirstBookAuthenticationAPI(BasicAuthenticationProvider):
         Defined solely so it can be overridden in the mock.
         """
         return requests.get(url)
-
-
-class MockFirstBookResponse(object):
-
-    def __init__(self, status_code, content):
-        self.status_code = status_code
-        # Guarantee that the response content is always a bytestring,
-        # as it would be in real life.
-        if isinstance(content, str):
-            content = content.encode("utf8")
-        self.content = content
-
-class MockFirstBookAuthenticationAPI(FirstBookAuthenticationAPI):
-
-    SUCCESS = '"Valid Code Pin Pair"'
-    FAILURE = '{"code":404,"message":"Access Code Pin Pair not found"}'
-
-    def __init__(self, library, integration, valid={}, bad_connection=False,
-                 failure_status_code=None):
-        super(MockFirstBookAuthenticationAPI, self).__init__(
-            library, integration, root="http://example.com/",
-            secret="secret"
-        )
-        self.identifier_re = None
-        self.password_re = None
-
-        self.valid = valid
-        self.bad_connection = bad_connection
-        self.failure_status_code = failure_status_code
-
-        self.request_urls = []
-
-    def request(self, url):
-        self.request_urls.append(url)
-        if self.bad_connection:
-            # Simulate a bad connection.
-            raise requests.exceptions.ConnectionError("Could not connect!")
-        elif self.failure_status_code:
-            # Simulate a server returning an unexpected error code.
-            return MockFirstBookResponse(
-                self.failure_status_code, "Error %s" % self.failure_status_code
-            )
-        parsed = urllib.parse.urlparse(url)
-        token = parsed.path.split("/")[-1]
-        barcode, pin = self._decode(token)
-
-        # The barcode and pin must be present in self.valid.
-        if barcode in self.valid and self.valid[barcode] == pin:
-            return MockFirstBookResponse(200, self.SUCCESS)
-        else:
-            return MockFirstBookResponse(200, self.FAILURE)
-
-    def _decode(self, token):
-        # Decode a JWT. Only used in tests -- in production, this is
-        # First Book's job.
-
-        # The JWT must be signed with the shared secret.
-        payload = jwt.decode(token, self.secret, algorithms=self.ALGORITHM)
-
-        # The 'iat' field in the payload must be a recent timestamp.
-        assert (time.time()-int(payload['iat'])) < 2
-
-        return payload['barcode'], payload['pin']
-
 
 
 # Specify which of the classes defined in this module is the

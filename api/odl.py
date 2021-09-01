@@ -35,7 +35,6 @@ from core.model import (
     RightsStatus,
     Session,
     get_one,
-    get_one_or_create,
     Representation)
 from core.monitor import (
     CollectionMonitor,
@@ -44,10 +43,6 @@ from core.opds_import import (
     OPDSXMLParser,
     OPDSImporter,
     OPDSImportMonitor,
-)
-from core.testing import (
-    DatabaseTest,
-    MockRequestsResponse,
 )
 from core.util.datetime_helpers import (
     utc_now,
@@ -957,50 +952,6 @@ class ODLHoldReaper(CollectionMonitor):
         return progress
 
 
-class MockODLAPI(ODLAPI):
-    """Mock API for tests that overrides _get and _url_for and tracks requests."""
-
-    @classmethod
-    def mock_collection(cls, _db, protocol=ODLAPI.NAME):
-        """Create a mock ODL collection to use in tests."""
-        library = DatabaseTest.make_default_library(_db)
-        collection, ignore = get_one_or_create(
-            _db, Collection,
-            name="Test ODL Collection", create_method_kwargs=dict(
-                external_account_id="http://odl",
-            )
-        )
-        integration = collection.create_external_integration(
-            protocol=protocol
-        )
-        integration.username = 'a'
-        integration.password = 'b'
-        integration.url = 'http://metadata'
-        library.collections.append(collection)
-        return collection
-
-    def __init__(self, _db, collection, *args, **kwargs):
-        self.responses = []
-        self.requests = []
-        super(MockODLAPI, self).__init__(
-            _db, collection, *args, **kwargs
-        )
-
-    def queue_response(self, status_code, headers={}, content=None):
-        self.responses.insert(
-            0, MockRequestsResponse(status_code, headers, content)
-        )
-
-    def _get(self, url, headers=None):
-        self.requests.append([url, headers])
-        response = self.responses.pop()
-        return HTTP._process_response(url, response)
-
-    def _url_for(self, *args, **kwargs):
-        del kwargs["_external"]
-        return "http://%s?%s" % ("/".join(args), "&".join(["%s=%s" % (key, val) for key, val in list(kwargs.items())]))
-
-
 class SharedODLAPI(BaseCirculationAPI):
     """An API for circulation managers to use to connect to an ODL collection that's shared
     by another circulation manager.
@@ -1500,45 +1451,6 @@ class SharedODLImportMonitor(OPDSImportMonitor):
     def opds_url(self, collection):
         base_url = collection.external_account_id
         return base_url + "/crawlable"
-
-class MockSharedODLAPI(SharedODLAPI):
-    """Mock API for tests that overrides _get and tracks requests."""
-
-    @classmethod
-    def mock_collection(cls, _db):
-        """Create a mock ODL collection to use in tests."""
-        library = DatabaseTest.make_default_library(_db)
-        collection, ignore = get_one_or_create(
-            _db, Collection,
-            name="Test Shared ODL Collection", create_method_kwargs=dict(
-                external_account_id="http://shared-odl",
-            )
-        )
-        integration = collection.create_external_integration(
-            protocol=SharedODLAPI.NAME
-        )
-        library.collections.append(collection)
-        return collection
-
-    def __init__(self, _db, collection, *args, **kwargs):
-        self.responses = []
-        self.requests = []
-        self.request_args = []
-        super(MockSharedODLAPI, self).__init__(
-            _db, collection, *args, **kwargs
-        )
-
-    def queue_response(self, status_code, headers={}, content=None):
-        self.responses.insert(
-            0, MockRequestsResponse(status_code, headers, content)
-        )
-
-    def _get(self, url, patron=None, headers=None, allowed_response_codes=None):
-        allowed_response_codes = allowed_response_codes or ["2xx", "3xx"]
-        self.requests.append(url)
-        self.request_args.append((patron, headers, allowed_response_codes))
-        response = self.responses.pop()
-        return HTTP._process_response(url, response, allowed_response_codes=allowed_response_codes)
 
 
 class ODLExpiredItemsReaper(IdentifierSweepMonitor):

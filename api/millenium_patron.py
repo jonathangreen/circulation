@@ -1,33 +1,20 @@
 import dateutil
-import logging
 from lxml import etree
-from urllib.parse import urljoin
-from urllib.parse import urlencode
 import datetime
-import requests
 from money import Money
 from flask_babel import lazy_gettext as _
 
-from core.util.datetime_helpers import (
-    datetime_utc,
-    utc_now,
-)
 from core.util.xmlparser import XMLParser
 from .authenticator import (
     BasicAuthenticationProvider,
     PatronData,
 )
 from .config import (
-    Configuration,
     CannotLoadConfiguration,
 )
-import os
 import re
 from core.model import (
-    get_one,
-    get_one_or_create,
     ExternalIntegration,
-    Patron,
 )
 from core.util.http import HTTP
 from core.util import MoneyUtility
@@ -467,63 +454,5 @@ class MilleniumPatronAPI(BasicAuthenticationProvider, XMLParser):
                 return match.groups()[0]
         return None
 
-
-class MockMilleniumPatronAPI(MilleniumPatronAPI):
-
-    """This mocks the API on a higher level than the HTTP level.
-
-    It is not used in the tests of the MilleniumPatronAPI class.  It
-    is used in the Adobe Vendor ID tests but maybe it shouldn't.
-    """
-
-    # For expiration dates we're using UTC instead of local time for
-    # convenience; the difference doesn't matter because the dates in
-    # question are at least 10 days away from the current date.
-
-    # This user's card has expired.
-    user1 = PatronData(
-        permanent_id="12345",
-        authorization_identifier="0",
-        username="alice",
-        authorization_expires = datetime_utc(2015, 4, 1)
-    )
-
-    # This user's card still has ten days on it.
-    the_future = utc_now() + datetime.timedelta(days=10)
-    user2 = PatronData(
-        permanent_id="67890",
-        authorization_identifier="5",
-        username="bob",
-        authorization_expires = the_future,
-    )
-
-    users = [user1, user2]
-
-    def __init__(self):
-        pass
-
-    def remote_authenticate(self, barcode, pin):
-        """A barcode that's 14 digits long is treated as valid,
-        no matter which PIN is used.
-
-        That's so real barcode/PIN combos can be passed through to
-        third parties.
-
-        Otherwise, valid test PIN is the first character of the barcode
-        repeated four times.
-
-        """
-        u = self.dump(barcode)
-        if 'ERRNUM' in u:
-            return False
-        return len(barcode) == 14 or pin == barcode[0] * 4
-
-    def remote_patron_lookup(self, patron_or_patrondata):
-        # We have a couple custom barcodes.
-        look_for = patron_or_patrondata.authorization_identifier
-        for u in self.users:
-            if u.authorization_identifier == look_for:
-                return u
-        return None
 
 AuthenticationProvider = MilleniumPatronAPI

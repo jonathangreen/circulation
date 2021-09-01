@@ -6,11 +6,6 @@ from flask_babel import lazy_gettext as _
 
 from core.config import (
     CannotLoadConfiguration,
-    Configuration,
-)
-from core.coverage import (
-    CoverageFailure,
-    IdentifierCoverageProvider,
 )
 from core.metadata_layer import (
     ContributorData,
@@ -29,10 +24,8 @@ from core.model import (
     Representation,
     Session,
     Subject,
-    get_one,
     Equivalency,
     LicensePool,
-    Collection,
     Edition,
     Contributor,
     Contribution,
@@ -661,18 +654,3 @@ class NoveListAPI(object):
         return response
 
 
-class MockNoveListAPI(NoveListAPI):
-
-    def __init__(self, _db, *args, **kwargs):
-        self._db = _db
-        self.responses = []
-
-    def setup_method(self, *args):
-        self.responses = self.responses + list(args)
-
-    def lookup(self, identifier):
-        if not self.responses:
-            return []
-        response = self.responses[0]
-        self.responses = self.responses[1:]
-        return response
