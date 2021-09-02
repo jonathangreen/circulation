@@ -9,13 +9,13 @@ env:
 
 jobs:
   test:
-    name: ${{ matrix.component }} Tests (Py ${{ matrix.python-version }})
+    name: ${{ matrix.module }} Tests (Py ${{ matrix.python-version }})
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
         python-version: [3.6, 3.7, 3.8]
-        component: [Circulation, Core]
+        module: [Api, Core]
 
     # We want to run on external PRs, but not on our own internal PRs as they'll be run
     # by the push to the branch. This prevents duplicated runs on internal PRs.
@@ -44,7 +44,7 @@ jobs:
       - name: Run Tests
         run: tox
         env:
-          COMPONENT: ${{ matrix.component }}
+          MODULE: ${{ matrix.module }}
 
 
   build-docker-exec:
