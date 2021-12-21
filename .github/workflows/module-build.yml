@@ -1,0 +1,106 @@
+name: Docker Build
+
+on:
+  workflow_call:
+    inputs:
+      container-name:
+        required: true
+        type: string
+      docker-file:
+        required: true
+        type: string
+      tests:
+        type: string
+
+env:
+  POSTGRES_USER: simplified_test
+  POSTGRES_PASSWORD: test
+  POSTGRES_DB: simplified_circulation_test
+
+jobs:
+  docker-build:
+    name: Build and push ${{ inputs.container_name }}
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:12
+        env:
+          POSTGRES_USER: ${{ env.POSTGRES_USER }}
+          POSTGRES_PASSWORD: ${{ env.POSTGRES_PASSWORD }}
+          POSTGRES_DB: ${{ env.POSTGRES_DB }}
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
+
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v1
+        with:
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build image
+        uses: docker/build-push-action@v2
+        with:
+          context: ./docker
+          file: ${{ inputs.docker-file }}
+          load: true
+          tags: container
+          build-args: |
+            repo=${{ github.repository }}
+            version=${{ github.sha }}
+
+      - name: Start container
+        run: >
+          docker run --rm --name circ -d
+          --network ${{job.services.postgres.network}}
+          -e SIMPLIFIED_PRODUCTION_DATABASE="postgres://${{ env.POSTGRES_USER }}:${{ env.POSTGRES_PASSWORD }}@postgres:5432/${{ env.POSTGRES_DB }}"
+          container
+        if: ${{ inputs.tests != "" }}
+
+      - name: Run tests
+        run: ${{ inputs.tests }}
+        if: ${{ inputs.tests != "" }}
+
+      - name: Stop container
+        run: docker stop container
+        if: ${{ always() }}
+        continue-on-error: true
+
+      - name: Generate tags
+        id: tags
+        uses: docker/metadata-action@v3
+        with:
+          images: ghcr.io/${{ github.repository_owner }}/${{ inputs.container_name }}
+          tags: |
+            type=semver,pattern={{major}}.{{minor}},priority=10
+            type=semver,pattern={{version}},priority=20
+            type=ref,event=branch,priority=30
+            type=sha,priority=40
+
+      - name: Push image
+        uses: docker/build-push-action@v2
+        with:
+          context: ./docker
+          file: ${{ inputs.docker-file }}
+          push: true
+          tags: ${{ steps.tags.outputs.tags }}
+          build-args: |
+            repo=${{ github.repository }}
+            version=${{ github.sha }}
+        # Push the built docker image only in the following cases:
+        #  - The `NO_DOCKER_IMAGE` secret is not set. (Useful if you want to disable pushing
+        #    of docker images in local forks of this repo).
+        #  - The branch name does not start with `dependabot/`. The dependabot service does not
+        #    have the proper security token to push to github packages.
+        #  - The event that triggered this action was a `push`. If it was a PR the github action
+        #    context will not have permissions to push the image to github packages.
+        if: ${{
+            secrets.NO_DOCKER_IMAGE == null &&
+            !startsWith(github.ref, 'refs/heads/dependabot/') &&
+            github.event_name == 'push'
+          }}

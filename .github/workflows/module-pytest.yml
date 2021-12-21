@@ -1,0 +1,40 @@
+name: Pytest
+
+on:
+  workflow_call:
+    inputs:
+      module:
+        required: true
+        type: string
+      python-version:
+        required: true
+        type: string
+
+jobs:
+  test:
+    name: ${{ inputs.module }} Tests (Py ${{ inputs.python-version }})
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{ inputs.python-version }}
+
+      - name: Install Apt Packages
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes libxmlsec1-dev libxml2-dev
+
+      - name: Install Python Packages
+        run: |
+          pip install --upgrade pip
+          pip install tox tox-gh-actions tox-docker
+
+      - name: Run Tests
+        run: tox
+        env:
+          MODULE: ${{ inputs.module }}
