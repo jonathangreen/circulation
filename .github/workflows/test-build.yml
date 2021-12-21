@@ -13,7 +13,7 @@ jobs:
         module: [Api, Core]
 
     steps:
-      - uses: .github/actions/module-pytest.yml
+      - uses: ./.github/actions/module-pytest.yml
         with:
           module: ${{ matrix.module }}
           python-version: ${{ matrix.python-version }}
