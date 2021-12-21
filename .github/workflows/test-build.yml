@@ -13,7 +13,7 @@ jobs:
         module: [Api, Core]
 
     steps:
-      - uses: ./.github/workflows/module-pytest.yml
+      - uses: ${{ github.repository }}/.github/workflows/module-pytest.yml@{{ github.sha }}
         with:
           module: ${{ matrix.module }}
           python-version: ${{ matrix.python-version }}
