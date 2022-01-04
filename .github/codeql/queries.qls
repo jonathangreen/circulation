@@ -1,7 +1,9 @@
 - description: Security-and-quality queries for Python
-- qlpack: codeql-python
-- apply: security-and-quality-selectors.yml
-  from: codeql-suite-helpers
+# Documentation used to create this file
+# https://codeql.github.com/docs/codeql-cli/creating-codeql-query-suites/
+# https://github.com/github/codeql/issues/4426
+- import: codeql-suites/python-security-and-quality.qls
+  from: codeql-python
 - exclude:
     query filename:
         - CleartextLogging.ql
