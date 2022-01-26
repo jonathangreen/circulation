@@ -90,7 +90,7 @@ jobs:
 
       - name: Set outputs for build steps
         id: outputs
-        run: >
+        run: |
           echo "::set-output name=version::$(git describe --tags)"
           echo "::set-output name=docker-tags::
             type=semver,pattern={{major}}.{{minor}},priority=10
@@ -107,6 +107,7 @@ jobs:
 
       - name: Create version file
         run: echo "${{ steps.outputs.version }}" > .version
+        if: steps.outputs.version != ""
 
       - name: Build circ-scripts image
         uses: docker/build-push-action@v2
