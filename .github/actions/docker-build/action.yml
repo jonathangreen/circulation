@@ -19,7 +19,8 @@ inputs:
 runs:
   using: "composite"
   steps:
-    - uses: docker/build-push-action@v2
+    - name: Build image
+      uses: docker/build-push-action@v2
       with:
         context: .
         file: ${{ inputs.file }}
@@ -29,14 +30,17 @@ runs:
         cache-from: type=gha
         cache-to: type=gha,mode=max
 
-    - run: >
+    - name: Run image
+      run: >
         docker run --rm --name test-image -d ${{ inputs.run-opts }} image
       shell: bash
 
-    - run: ${{ inputs.test-script }} test-image
+    - name: Test image
+      run: ${{ inputs.test-script }} test-image
       if: ${{ inputs.test-script != '' }}
       shell: bash
 
-    - if: always()
+    - name: Stop image
+      if: always()
       run: docker stop test-image
       shell: bash
