@@ -1,0 +1,42 @@
+name: 'Docker Build'
+description: 'Build image and optionally test it'
+
+inputs:
+  target:
+    description: "Target to build"
+    required: true
+  file:
+    description: "Docker file to use"
+    required: false
+    default: "./docker/Dockerfile"
+  run-opts:
+    description: "Options to pass to docker run"
+    required: false
+  test-script:
+    description: "Script to test image"
+    required: false
+
+runs:
+  using: "composite"
+  steps:
+    - uses: docker/build-push-action@v2
+      with:
+        context: .
+        file: ${{ inputs.file }}
+        load: true
+        tags: image
+        target: ${{ inputs.target }}
+        cache-from: type=gha
+        cache-to: type=gha,mode=max
+
+    - run: >
+        docker run --rm --name test-image -d ${{ inputs.run-opts }} image
+      shell: bash
+
+    - run: ${{ inputs.test-script }}
+      if: ${{ inputs.test-script != '' }}
+      shell: bash
+
+    - if: always()
+      run: docker stop test-image
+      shell: bash

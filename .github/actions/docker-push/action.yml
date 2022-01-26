@@ -1,0 +1,49 @@
+name: 'Docker Push'
+description: 'Push images'
+
+inputs:
+  target:
+    description: "Target to build"
+    required: true
+  image:
+    description: "Image to push"
+    required: true
+  file:
+    description: "Docker file to use"
+    required: false
+    default: "./docker/Dockerfile"
+  push:
+    description: Push the built image
+    required: false
+    # Push the built docker image by default in the following cases:
+    #  - The `NO_DOCKER_IMAGE` secret is not set. (Useful if you want to disable pushing
+    #    of docker images in local forks of this repo).
+    #  - The event that triggered this action was a `push`. If it was a PR the github action
+    #    context will not have permissions to push the image to github packages.
+    default: ${{
+        secrets.NO_DOCKER_IMAGE == null &&
+        github.event_name == 'push'
+      }}
+
+runs:
+  using: "composite"
+  steps:
+    - id: tags
+      uses: docker/metadata-action@v3
+      with:
+        images: ghcr.io/${{ github.repository_owner }}/${{ inputs.image }}
+        tags: |
+          type=semver,pattern={{major}}.{{minor}},priority=10
+          type=semver,pattern={{version}},priority=20
+          type=ref,event=branch,priority=30
+          type=sha,priority=40
+
+    - uses: docker/build-push-action@v2
+      with:
+        context: .
+        file: ${{ inputs.file }}
+        push: ${{ inputs.push }}
+        tags: ${{ steps.tags.outputs.tags }}
+        target: ${{ inputs.target }}
+        cache-from: type=gha
+        cache-to: type=gha,mode=max

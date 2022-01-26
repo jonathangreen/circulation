@@ -5,19 +5,6 @@ env:
   POSTGRES_PASSWORD: test
   POSTGRES_DB: simplified_circulation_test
 
-  # Push the built docker image only in the following cases:
-  #  - The `NO_DOCKER_IMAGE` secret is not set. (Useful if you want to disable pushing
-  #    of docker images in local forks of this repo).
-  #  - The branch name does not start with `dependabot/`. The dependabot service does not
-  #    have the proper security token to push to github packages.
-  #  - The event that triggered this action was a `push`. If it was a PR the github action
-  #    context will not have permissions to push the image to github packages.
-  IMAGE_PUSH_ENABLED: ${{
-      secrets.NO_DOCKER_IMAGE == null &&
-      !startsWith(github.ref, 'refs/heads/dependabot/') &&
-      github.event_name == 'push'
-    }}
-
 jobs:
   test:
     name: ${{ matrix.module }} Tests (Py ${{ matrix.python-version }})
@@ -92,11 +79,6 @@ jobs:
         id: outputs
         run: |
           echo "::set-output name=version::$(git describe --tags)"
-          echo "::set-output name=docker-tags::
-            type=semver,pattern={{major}}.{{minor}},priority=10
-            type=semver,pattern={{version}},priority=20
-            type=ref,event=branch,priority=30
-            type=sha,priority=40"
 
       - name: Login to GitHub Container Registry
         uses: docker/login-action@v1
@@ -109,106 +91,38 @@ jobs:
         run: echo "${{ steps.outputs.version }}" > .version
         if: ${{ steps.outputs.version != '' }}
 
-      - name: Build circ-scripts image
-        uses: docker/build-push-action@v2
+      - name: Build and test circ-scripts
+        uses: ./.github/actions/docker-build
         with:
-          context: .
-          file: ./docker/Dockerfile
-          load: true
-          tags: circ
           target: scripts
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
+          run-opts: |
+            --network ${{job.services.postgres.network}}
+            -e SIMPLIFIED_PRODUCTION_DATABASE="postgres://${{ env.POSTGRES_USER }}:${{ env.POSTGRES_PASSWORD }}@postgres:5432/${{ env.POSTGRES_DB }}"
+          test-script: ./docker/ci/test_scripts.sh
 
-      - name: Start circ-scripts docker container
-        run: >
-          docker run --rm --name circ -d
-          --network ${{job.services.postgres.network}}
-          -e SIMPLIFIED_PRODUCTION_DATABASE="postgres://${{ env.POSTGRES_USER }}:${{ env.POSTGRES_PASSWORD }}@postgres:5432/${{ env.POSTGRES_DB }}"
-          circ
-
-      - name: Run circ-scripts tests
-        run: ./docker/ci/test_scripts.sh
-
-      - name: Stop circ-scripts docker container
-        if: always()
-        run: docker stop circ
-
-      - name: Build circ-webapp image
-        uses: docker/build-push-action@v2
+      - name: Build and test circ-webapp
+        uses: ./.github/actions/docker-build
         with:
-          context: .
-          file: ./docker/Dockerfile
-          load: true
-          tags: circ
           target: webapp
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
+          run-opts: |
+            --network ${{job.services.postgres.network}}
+            -e SIMPLIFIED_PRODUCTION_DATABASE="postgres://${{ env.POSTGRES_USER }}:${{ env.POSTGRES_PASSWORD }}@postgres:5432/${{ env.POSTGRES_DB }}"
+          test-script: ./docker/ci/test_webapp.sh
 
-      - name: Start circ-webapp docker container
-        run: >
-          docker run --rm --name circ -p 8000:80 -d
-          --network ${{job.services.postgres.network}}
-          -e SIMPLIFIED_PRODUCTION_DATABASE="postgres://${{ env.POSTGRES_USER }}:${{ env.POSTGRES_PASSWORD }}@postgres:5432/${{ env.POSTGRES_DB }}"
-          circ
-
-      - name: Run circ-webapp tests
-        run: ./docker/ci/test_webapp.sh
-
-      - name: Stop circ-webapp docker container
-        if: always()
-        run: docker stop circ
-
-      - name: Generate tags for circ-exec image
-        id: exec-tags
-        uses: docker/metadata-action@v3
+      - name: Push circ-scripts
+        uses: ./.github/actions/docker-push
         with:
-          images: ghcr.io/${{ github.repository_owner }}/circ-exec
-          tags: ${{ steps.output.docker-tags }}
+          target: scripts
+          image: circ-scripts
 
-      - name: Build & push exec image
-        uses: docker/build-push-action@v2
+      - name: Push circ-webapp
+        uses: ./.github/actions/docker-push
         with:
-          context: .
-          file: ./docker/Dockerfile
-          push: ${{ env.IMAGE_PUSH_ENABLED }}
-          tags: ${{ steps.exec-tags.outputs.tags }}
+          target: webapp
+          image: circ-webapp
+
+      - name: Push circ-exec
+        uses: ./.github/actions/docker-push
+        with:
           target: exec
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
-
-      - name: Generate tags for circ-scripts image
-        id: scripts-tags
-        uses: docker/metadata-action@v3
-        with:
-          images: ghcr.io/${{ github.repository_owner }}/circ-scripts
-          tags: ${{ steps.output.docker-tags }}
-
-      - name: Build & push script image
-        uses: docker/build-push-action@v2
-        with:
-          context: .
-          file: ./docker/Dockerfile
-          push: ${{ env.IMAGE_PUSH_ENABLED }}
-          tags: ${{ steps.scripts-tags.outputs.tags }}
-          target: scripts
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
-
-      - name: Generate tags for circ-webapp image
-        id: webapp-tags
-        uses: docker/metadata-action@v3
-        with:
-          images: ghcr.io/${{ github.repository_owner }}/circ-webapp
-          tags: ${{ steps.output.docker-tags }}
-
-      - name: Build & push webapp image
-        uses: docker/build-push-action@v2
-        with:
-          context: .
-          file: ./docker/Dockerfile
-          push: ${{ env.IMAGE_PUSH_ENABLED }}
-          tags: ${{ steps.webapp-tags.outputs.tags }}
-          target: webapp
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
+          image: circ-exec
