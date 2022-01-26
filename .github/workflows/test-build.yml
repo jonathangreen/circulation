@@ -93,7 +93,9 @@ jobs:
       - name: Set outputs for build steps
         id: outputs
         run: |
-          echo "::set-output name=version::$(git describe --tags)"
+          VERSION=$(git describe --tags)
+          echo $VERSION
+          echo '::set-output name=version::$VERSION'
 
       - name: Login to GitHub Container Registry
         uses: docker/login-action@v1
@@ -103,7 +105,7 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Create version file
-        run: echo "${{ steps.outputs.version }}" > .version
+        run: git describe --tags > .version
         if: ${{ steps.outputs.version != '' }}
 
       - name: Build and test circ-scripts
