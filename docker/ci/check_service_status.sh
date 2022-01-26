@@ -1,3 +1,12 @@
+# Wait for runit to start in container
+function wait_for_runit()
+{
+  # The container to run the command in
+  container="$1"
+
+  timeout 30s grep -q 'Runit started' <(docker logs "$container" -f 2>&1)
+}
+
 # A method to check that runit services are running inside the container
 function check_service_status()
 {
