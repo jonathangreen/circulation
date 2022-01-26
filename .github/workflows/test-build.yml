@@ -90,12 +90,9 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v1
 
-      - name: Set outputs for build steps
-        id: outputs
+      - id: version
         run: |
-          VERSION=$(git describe --tags)
-          echo $VERSION
-          echo "::set-output name=version::$VERSION"
+          echo "::set-output name=version::$(git describe --tags)"
 
       - name: Login to GitHub Container Registry
         uses: docker/login-action@v1
@@ -105,7 +102,8 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Create version file
-        run: echo "${{ steps.outputs.version }}" > .version
+        run: echo "${{ steps.version.outputs.version }}" > .version
+        if: steps.version.outputs.version != null
 
       - name: Build and test circ-scripts
         uses: ./.github/actions/docker-build
