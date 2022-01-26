@@ -95,7 +95,7 @@ jobs:
         run: |
           VERSION=$(git describe --tags)
           echo $VERSION
-          echo '::set-output name=version::$VERSION'
+          echo "::set-output name=version::$VERSION"
 
       - name: Login to GitHub Container Registry
         uses: docker/login-action@v1
@@ -106,7 +106,7 @@ jobs:
 
       - name: Create version file
         run: git describe --tags > .version
-        if: ${{ steps.outputs.version != '' }}
+        if: steps.outputs.version != null
 
       - name: Build and test circ-scripts
         uses: ./.github/actions/docker-build
