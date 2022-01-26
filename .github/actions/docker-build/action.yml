@@ -33,7 +33,7 @@ runs:
         docker run --rm --name test-image -d ${{ inputs.run-opts }} image
       shell: bash
 
-    - run: ${{ inputs.test-script }}
+    - run: ${{ inputs.test-script }} test-image
       if: ${{ inputs.test-script != '' }}
       shell: bash
 

@@ -2,15 +2,16 @@
 
 set -ex
 
-# Wait for the container to start services before running tests
-sleep 30;
+# Container is passed as arg
+container="$1"
 
+# Source check command
 dir=$(dirname "${BASH_SOURCE[0]}")
 source "${dir}/check_service_status.sh"
 
 # In a webapp container, check that nginx and uwsgi are running.
-check_service_status /etc/service/nginx
-check_service_status /home/simplified/service/uwsgi
+check_service_status "$container" /etc/service/nginx
+check_service_status "$container" /home/simplified/service/uwsgi
 
 # Make sure the web server is running.
 healthcheck=$(curl --write-out "%{http_code}" --silent --output /dev/null http://localhost:8000/healthcheck.html)
