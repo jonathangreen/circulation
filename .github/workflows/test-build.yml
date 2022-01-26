@@ -90,7 +90,8 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v1
 
-      - id: version
+      - name: Set version output
+        id: version
         run: |
           echo "::set-output name=version::$(git describe --tags)"
 
