@@ -107,7 +107,7 @@ jobs:
 
       - name: Create version file
         run: echo "${{ steps.outputs.version }}" > .version
-        if: ${{ steps.outputs.version != "" }}
+        if: ${{ steps.outputs.version != '' }}
 
       - name: Build circ-scripts image
         uses: docker/build-push-action@v2
