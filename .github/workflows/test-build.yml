@@ -105,8 +105,7 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Create version file
-        run: git describe --tags > .version
-        if: steps.outputs.version != null
+        run: echo "${{ steps.outputs.version }}" > .version
 
       - name: Build and test circ-scripts
         uses: ./.github/actions/docker-build
