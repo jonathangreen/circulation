@@ -95,7 +95,7 @@ jobs:
         uses: ./.github/actions/docker-build
         with:
           target: scripts
-          run-opts: |
+          run-opts: >-
             --network ${{job.services.postgres.network}}
             -e SIMPLIFIED_PRODUCTION_DATABASE="postgres://${{ env.POSTGRES_USER }}:${{ env.POSTGRES_PASSWORD }}@postgres:5432/${{ env.POSTGRES_DB }}"
           test-script: ./docker/ci/test_scripts.sh
@@ -104,7 +104,7 @@ jobs:
         uses: ./.github/actions/docker-build
         with:
           target: webapp
-          run-opts: |
+          run-opts: >-
             --network ${{job.services.postgres.network}}
             -e SIMPLIFIED_PRODUCTION_DATABASE="postgres://${{ env.POSTGRES_USER }}:${{ env.POSTGRES_PASSWORD }}@postgres:5432/${{ env.POSTGRES_DB }}"
           test-script: ./docker/ci/test_webapp.sh
