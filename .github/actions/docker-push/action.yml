@@ -20,7 +20,7 @@ inputs:
 runs:
   using: "composite"
   steps:
-    - id: tags
+    - id: meta
       uses: docker/metadata-action@v3
       with:
         images: ghcr.io/${{ github.repository_owner }}/${{ inputs.image }}
@@ -35,7 +35,8 @@ runs:
         context: .
         file: ${{ inputs.file }}
         push: ${{ inputs.push }}
-        tags: ${{ steps.tags.outputs.tags }}
+        tags: ${{ steps.meta.outputs.tags }}
+        labels: ${{ steps.meta.outputs.labels }}
         target: ${{ inputs.target }}
         cache-from: type=gha
         cache-to: type=gha,mode=max
