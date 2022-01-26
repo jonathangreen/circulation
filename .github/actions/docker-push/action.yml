@@ -15,15 +15,7 @@ inputs:
   push:
     description: Push the built image
     required: false
-    # Push the built docker image by default in the following cases:
-    #  - The `NO_DOCKER_IMAGE` secret is not set. (Useful if you want to disable pushing
-    #    of docker images in local forks of this repo).
-    #  - The event that triggered this action was a `push`. If it was a PR the github action
-    #    context will not have permissions to push the image to github packages.
-    default: ${{
-        secrets.NO_DOCKER_IMAGE == null &&
-        github.event_name == 'push'
-      }}
+    default: 'true'
 
 runs:
   using: "composite"

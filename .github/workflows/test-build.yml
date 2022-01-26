@@ -1,15 +1,13 @@
 name: Test & Build
 on: [push, pull_request]
-env:
-  POSTGRES_USER: simplified_test
-  POSTGRES_PASSWORD: test
-  POSTGRES_DB: simplified_circulation_test
 
 jobs:
   test:
     name: ${{ matrix.module }} Tests (Py ${{ matrix.python-version }})
     runs-on: ubuntu-latest
     timeout-minutes: 60
+    permissions:
+      contents: read
     strategy:
       fail-fast: false
       matrix:
@@ -51,12 +49,29 @@ jobs:
   build-docker-images:
     name: Build and push docker images
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
 
     # We want to run on external PRs, but not on our own internal PRs as they'll be run
     # by the push to the branch. This prevents duplicated runs on internal PRs.
     # Some discussion of this here:
     # https://github.community/t/duplicate-checks-on-push-and-pull-request-simultaneous-event/18012
     if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name != github.repository
+
+    env:
+      POSTGRES_USER: simplified_test
+      POSTGRES_PASSWORD: test
+      POSTGRES_DB: simplified_circulation_test
+      # Push the built docker image only in the following cases:
+      #  - The `NO_DOCKER_IMAGE` secret is not set. (Useful if you want to disable pushing
+      #    of docker images in local forks of this repo).
+      #  - The event that triggered this action was a `push`. If it was a PR the github action
+      #    context will not have permissions to push the image to github packages.
+      IMAGE_PUSH_ENABLED: ${{
+          secrets.NO_DOCKER_IMAGE == null &&
+          github.event_name == 'push'
+        }}
 
     services:
       postgres:
@@ -114,6 +129,7 @@ jobs:
         with:
           target: scripts
           image: circ-scripts
+          push: ${{ env.IMAGE_PUSH_ENABLED }}
 
       - name: Push circ-webapp
         uses: ./.github/actions/docker-push
