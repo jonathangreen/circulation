@@ -19,9 +19,6 @@ inputs:
   description:
     description: "Description of the image"
     required: false
-  version:
-    description: "Version from git"
-    required: false
 
 runs:
   using: "composite"
@@ -35,7 +32,7 @@ runs:
           type=semver,pattern={{major}}.{{minor}},priority=300
           type=ref,event=branch,priority=400
           type=sha,priority=500
-          type=raw,value=${{ inputs.version }},enabled=${{ inputs.version != null }}
+          type=semver,pattern={{version}},priority=600
         labels: |
           org.opencontainers.image.title=${{ inputs.image }}
           org.opencontainers.image.description=${{ inputs.description }}

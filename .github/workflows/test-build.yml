@@ -130,7 +130,6 @@ jobs:
           target: scripts
           image: circ-scripts
           push: ${{ env.IMAGE_PUSH_ENABLED }}
-          version: ${{ steps.version.outputs.version }}
 
       - name: Push circ-webapp
         uses: ./.github/actions/docker-push
@@ -138,7 +137,6 @@ jobs:
           target: webapp
           image: circ-webapp
           push: ${{ env.IMAGE_PUSH_ENABLED }}
-          version: ${{ steps.version.outputs.version }}
 
       - name: Push circ-exec
         uses: ./.github/actions/docker-push
@@ -146,4 +144,3 @@ jobs:
           target: exec
           image: circ-exec
           push: ${{ env.IMAGE_PUSH_ENABLED }}
-          version: ${{ steps.version.outputs.version }}
