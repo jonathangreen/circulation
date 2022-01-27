@@ -1253,7 +1253,7 @@ testing = ["coverage (>=4)", "coverage-enable-subprocess (>=1)", "flaky (>=3)", 
 
 [[package]]
 name = "watchtower"
-version = "2.1.1"
+version = "3.0.0"
 description = "Python CloudWatch Logging"
 category = "main"
 optional = false
@@ -1323,7 +1323,7 @@ pg-binary = ["psycopg2-binary"]
 [metadata]
 lock-version = "1.1"
 python-versions = ">=3.7,<4"
-content-hash = "5181896704ccc9f1d03b9cad04afa9b95eb47de942e2e38514ae42066558cada"
+content-hash = "aac686d8122d683e00fdd692282a47e6e9fe44fa8d81e97cf3a07a9b31403105"
 
 [metadata.files]
 atomicwrites = [
@@ -2254,8 +2254,8 @@ virtualenv = [
     {file = "virtualenv-20.10.0.tar.gz", hash = "sha256:576d05b46eace16a9c348085f7d0dc8ef28713a2cabaa1cf0aea41e8f12c9218"},
 ]
 watchtower = [
-    {file = "watchtower-2.1.1-py3-none-any.whl", hash = "sha256:395cf28e73585b406a4ebaa1997acf99408b89413423bf9a83aeb0cbff084d58"},
-    {file = "watchtower-2.1.1.tar.gz", hash = "sha256:fdeb7f47b856afb2febe05a2ed7e89f54e9b03755f3898740c3e4cd99ae03f79"},
+    {file = "watchtower-3.0.0-py3-none-any.whl", hash = "sha256:7f51411a4e736baad0504ce9a68fae5babecf009c15ec4df96451c6fecacbf4c"},
+    {file = "watchtower-3.0.0.tar.gz", hash = "sha256:c66283efb4af22f1dd7565b12450dad4ef9175878f3d65b56ccff0dcf0a53c28"},
 ]
 wcag-contrast-ratio = [
     {file = "wcag-contrast-ratio-0.9.tar.gz", hash = "sha256:69192b8e5c0a7d0dc5ff1187eeb3e398141633a4bde51c69c87f58fe87ed361c"},
