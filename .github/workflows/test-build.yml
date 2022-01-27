@@ -136,9 +136,11 @@ jobs:
         with:
           target: webapp
           image: circ-webapp
+          push: ${{ env.IMAGE_PUSH_ENABLED }}
 
       - name: Push circ-exec
         uses: ./.github/actions/docker-push
         with:
           target: exec
           image: circ-exec
+          push: ${{ env.IMAGE_PUSH_ENABLED }}
