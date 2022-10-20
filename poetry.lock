@@ -1230,16 +1230,16 @@ python-versions = ">=3.7"
 jupyter = ["ipython"]
 
 [[package]]
-name = "PyJWT"
-version = "2.5.0"
+name = "pyjwt"
+version = "2.6.0"
 description = "JSON Web Token implementation in Python"
 category = "main"
 optional = false
 python-versions = ">=3.7"
 
 [package.extras]
-crypto = ["cryptography (>=3.3.1)", "types-cryptography (>=3.3.21)"]
-dev = ["coverage[toml] (==5.0.4)", "cryptography (>=3.3.1)", "pre-commit", "pytest (>=6.0.0,<7.0.0)", "sphinx (>=4.5.0,<5.0.0)", "sphinx-rtd-theme", "types-cryptography (>=3.3.21)", "zope.interface"]
+crypto = ["cryptography (>=3.4.0)"]
+dev = ["coverage[toml] (==5.0.4)", "cryptography (>=3.4.0)", "pre-commit", "pytest (>=6.0.0,<7.0.0)", "sphinx (>=4.5.0,<5.0.0)", "sphinx-rtd-theme", "zope.interface"]
 docs = ["sphinx (>=4.5.0,<5.0.0)", "sphinx-rtd-theme", "zope.interface"]
 tests = ["coverage[toml] (==5.0.4)", "pytest (>=6.0.0,<7.0.0)"]
 
@@ -1923,7 +1923,7 @@ pg-binary = ["psycopg2-binary"]
 [metadata]
 lock-version = "1.1"
 python-versions = ">=3.7,<4"
-content-hash = "cb690f61a798033c10331152c12630fefc4da1a4a6cc3ae3d8e03eaf8a3bf5c0"
+content-hash = "a8a69c038961f0bb0ca826373e4c8307733fd39688f3a72e24f5c12b0edffd78"
 
 [metadata.files]
 atomicwrites = [
@@ -2905,9 +2905,9 @@ pyinstrument = [
     {file = "pyinstrument-4.3.0-cp39-cp39-win_amd64.whl", hash = "sha256:99c8dca1dddad2cebee0e96a7d285cad0f28341084c5616bde3fac87f0f38929"},
     {file = "pyinstrument-4.3.0.tar.gz", hash = "sha256:575c5e2581839a21800194842291e1348edecc6f4c67f8efeef8356588ea4c25"},
 ]
-PyJWT = [
-    {file = "PyJWT-2.5.0-py3-none-any.whl", hash = "sha256:8d82e7087868e94dd8d7d418e5088ce64f7daab4b36db654cbaedb46f9d1ca80"},
-    {file = "PyJWT-2.5.0.tar.gz", hash = "sha256:e77ab89480905d86998442ac5788f35333fa85f65047a534adc38edf3c88fc3b"},
+pyjwt = [
+    {file = "PyJWT-2.6.0-py3-none-any.whl", hash = "sha256:d83c3d892a77bbb74d3e1a2cfa90afaadb60945205d1095d9221f04466f64c14"},
+    {file = "PyJWT-2.6.0.tar.gz", hash = "sha256:69285c7e31fc44f68a1feb309e948e0df53259d579295e6cfe2b1792329f05fd"},
 ]
 pyld = [
     {file = "PyLD-2.0.3.tar.gz", hash = "sha256:287445f888c3a332ccbd20a14844c66c2fcbaeab3c99acd506a0788e2ebb2f82"},
