@@ -1722,7 +1722,7 @@ python-versions = "*"
 
 [[package]]
 name = "types-pillow"
-version = "9.3.0.2"
+version = "9.3.0.3"
 description = "Typing stubs for Pillow"
 category = "dev"
 optional = false
@@ -3366,8 +3366,8 @@ types-markupsafe = [
     {file = "types_MarkupSafe-1.1.10-py3-none-any.whl", hash = "sha256:ca2bee0f4faafc45250602567ef38d533e877d2ddca13003b319c551ff5b3cc5"},
 ]
 types-pillow = [
-    {file = "types-Pillow-9.3.0.2.tar.gz", hash = "sha256:2a0323bdc0af126a7ba12d3a529a50f1d058e827cb475500f14994876ab7d863"},
-    {file = "types_Pillow-9.3.0.2-py3-none-any.whl", hash = "sha256:b2d8a21b97857b69fbfdd5d0302e9a43ba4a9bdc625f4a6bdcd404aa175d86bc"},
+    {file = "types-Pillow-9.3.0.3.tar.gz", hash = "sha256:2411d2a4c2b23b532e9e70b00622ab6fc4267992aaea9e798a1f08e1c49b1624"},
+    {file = "types_Pillow-9.3.0.3-py3-none-any.whl", hash = "sha256:7e31a4b37603c3156aaf1725a86c17efaf1b1e98b4121df6ac921f8c22eb9879"},
 ]
 types-psycopg2 = [
     {file = "types-psycopg2-2.9.21.2.tar.gz", hash = "sha256:bff045579642ce00b4a3c8f2e401b7f96dfaa34939f10be64b0dd3b53feca57d"},
