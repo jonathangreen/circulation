@@ -88,8 +88,8 @@ crt = ["botocore[crt] (>=1.21.0,<2.0a0)"]
 
 [[package]]
 name = "boto3-stubs"
-version = "1.26.28"
-description = "Type annotations for boto3 1.26.28 generated with mypy-boto3-builder 7.12.0"
+version = "1.26.29"
+description = "Type annotations for boto3 1.26.29 generated with mypy-boto3-builder 7.12.0"
 category = "dev"
 optional = false
 python-versions = ">=3.7"
@@ -134,7 +134,7 @@ backup-gateway = ["mypy-boto3-backup-gateway (>=1.26.0,<1.27.0)"]
 backupstorage = ["mypy-boto3-backupstorage (>=1.26.0,<1.27.0)"]
 batch = ["mypy-boto3-batch (>=1.26.0,<1.27.0)"]
 billingconductor = ["mypy-boto3-billingconductor (>=1.26.0,<1.27.0)"]
-boto3 = ["boto3 (==1.26.28)", "botocore (==1.29.28)"]
+boto3 = ["boto3 (==1.26.29)", "botocore (==1.29.29)"]
 braket = ["mypy-boto3-braket (>=1.26.0,<1.27.0)"]
 budgets = ["mypy-boto3-budgets (>=1.26.0,<1.27.0)"]
 ce = ["mypy-boto3-ce (>=1.26.0,<1.27.0)"]
@@ -1943,7 +1943,7 @@ pg-binary = ["psycopg2-binary"]
 [metadata]
 lock-version = "1.1"
 python-versions = ">=3.7,<4"
-content-hash = "9e2f6299d86de6c353cd830fe17fd436fc4f923aa78a8e24d693c7d61e57c02e"
+content-hash = "42130d57d781997f7ff3c89a613c1c257a0aeff186c3941776319f79062373ee"
 
 [metadata.files]
 atomicwrites = [
@@ -1975,8 +1975,8 @@ boto3 = [
     {file = "boto3-1.18.65.tar.gz", hash = "sha256:baedf0637dd0e47cff60eb5591133f9c10aeb49581e2ad5a99794996a2dfbe09"},
 ]
 boto3-stubs = [
-    {file = "boto3-stubs-1.26.28.tar.gz", hash = "sha256:167c485d90ddc59697d0409adf2668b467c5f437e46109184fe12e7a25bd56d3"},
-    {file = "boto3_stubs-1.26.28-py3-none-any.whl", hash = "sha256:0f349d150dd420c1901f4f2e125aa06f40b987e458b05eccf3493c0df4557fd8"},
+    {file = "boto3-stubs-1.26.29.tar.gz", hash = "sha256:3d8293c0c194e8a9ae1333f98361bc6685e7f6a3dc6c0d5dc07a31f1e58a4079"},
+    {file = "boto3_stubs-1.26.29-py3-none-any.whl", hash = "sha256:d4acb587b1ce644b1db0e2a13b1721c02471f0a52bb16a8939c76fbcadb47f22"},
 ]
 botocore = [
     {file = "botocore-1.21.65-py3-none-any.whl", hash = "sha256:3bd0e3d6daee6afcc747d596b52158519abe1ce36f906d556b9f8b54faa081e8"},
