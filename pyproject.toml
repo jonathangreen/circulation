@@ -118,7 +118,7 @@ pymarc = "4.2.1"
 pyOpenSSL = "22.1.0"
 pyparsing = "3.0.9"
 pypostalcode = "0.4.1"
-pyspellchecker = "0.7.0"
+pyspellchecker = "0.7.1"
 pytest = "^7"  # Can't be made a dev dep because mocks included beside prod code.
 python = ">=3.7,<4"
 python-dateutil = "2.8.2"
