@@ -746,6 +746,14 @@ python-versions = ">=2.7,!=3.0.*,!=3.1.*,!=3.2.*,!=3.3.*,!=3.4.*"
 docs = ["Sphinx"]
 
 [[package]]
+name = "haversine"
+version = "2.7.0"
+description = "Calculate the distance between 2 points on Earth."
+category = "main"
+optional = false
+python-versions = ">=3.5"
+
+[[package]]
 name = "html-sanitizer"
 version = "1.9.3"
 description = "HTML sanitizer"
@@ -1163,6 +1171,21 @@ importlib-metadata = {version = "*", markers = "python_version < \"3.8\""}
 nodeenv = ">=0.11.1"
 pyyaml = ">=5.1"
 virtualenv = ">=20.10.0"
+
+[[package]]
+name = "prettytable"
+version = "3.5.0"
+description = "A simple Python library for easily displaying tabular data in a visually appealing ASCII table format"
+category = "main"
+optional = false
+python-versions = ">=3.7"
+
+[package.dependencies]
+importlib-metadata = {version = "*", markers = "python_version < \"3.8\""}
+wcwidth = "*"
+
+[package.extras]
+tests = ["pytest", "pytest-cov", "pytest-lazy-fixture"]
 
 [[package]]
 name = "psycopg2"
@@ -1604,6 +1627,21 @@ pymysql = ["pymysql", "pymysql (<1)"]
 sqlcipher = ["sqlcipher3_binary"]
 
 [[package]]
+name = "sqlalchemy-mate"
+version = "1.4.28.3"
+description = "A library extend sqlalchemy module, makes CRUD easier."
+category = "main"
+optional = false
+python-versions = "*"
+
+[package.dependencies]
+prettytable = "*"
+
+[package.extras]
+docs = ["docfly (==1.0.2)", "furo (==2021.8.31)", "rstobj (==0.0.7)", "sphinx (==4.3.0)", "sphinx-copybutton (==0.4.0)", "sphinx-inline-tabs (==2021.8.17b10)", "sphinx-jinja (==1.1.1)"]
+tests = ["attrs", "pandas", "pg8000", "pytest", "pytest-cov", "superjson"]
+
+[[package]]
 name = "sqlalchemy-stubs"
 version = "0.4"
 description = "SQLAlchemy stubs and mypy plugin"
@@ -1829,21 +1867,25 @@ socks = ["PySocks (>=1.5.6,!=1.5.7,<2.0)"]
 
 [[package]]
 name = "uszipcode"
-version = "0.2.6"
-description = "USA zipcode programmable database, includes up-to-date census and geometry information."
+version = "1.0.1"
+description = "USA zipcode programmable database, includes 2020 census data and geometry information."
 category = "main"
 optional = false
 python-versions = "*"
 
 [package.dependencies]
+atomicwrites = "*"
 attrs = "*"
+fuzzywuzzy = "*"
+haversine = ">=2.5.0"
 pathlib-mate = "*"
 requests = "*"
-SQLAlchemy = "*"
+SQLAlchemy = ">=1.4.0"
+sqlalchemy-mate = ">=1.4.28.3"
 
 [package.extras]
-docs = ["docfly (>=0.0.17)", "pygments", "rstobj (>=0.0.5)", "sphinx (==1.8.1)", "sphinx-copybutton", "sphinx-jinja", "sphinx-rtd-theme"]
-tests = ["pytest (==3.2.3)", "pytest-cov (==2.5.1)", "python-Levenshtein"]
+docs = ["docfly (==1.0.2)", "furo (==2021.8.31)", "rstobj (==0.0.7)", "sphinx (==4.3.0)", "sphinx-copybutton (==0.4.0)", "sphinx-inline-tabs (==2021.8.17b10)", "sphinx-jinja (==1.1.1)"]
+tests = ["pytest", "pytest-cov"]
 
 [[package]]
 name = "uwsgi"
@@ -1890,6 +1932,14 @@ tests = ["build", "coverage", "flake8 (>=4.0.1,<5)", "mypy", "pyyaml (>=5.3.1,<6
 name = "wcag-contrast-ratio"
 version = "0.9"
 description = "A library for computing contrast ratios, as required by WCAG 2.0"
+category = "main"
+optional = false
+python-versions = "*"
+
+[[package]]
+name = "wcwidth"
+version = "0.2.5"
+description = "Measures the displayed width of unicode strings in a terminal"
 category = "main"
 optional = false
 python-versions = "*"
@@ -1944,7 +1994,7 @@ pg-binary = ["psycopg2-binary"]
 [metadata]
 lock-version = "1.1"
 python-versions = ">=3.7,<4"
-content-hash = "9350e2082f6474e90720de2808618cff16741aa6ab5b2f3a875597d24d0f49d8"
+content-hash = "2b25c2e07da475b52ef0cea69a4db37bab5c30541a2376bbe383584fcf3a1c2a"
 
 [metadata.files]
 atomicwrites = [
@@ -2220,6 +2270,10 @@ greenlet = [
     {file = "greenlet-1.1.3-cp39-cp39-win32.whl", hash = "sha256:5fbe1ab72b998ca77ceabbae63a9b2e2dc2d963f4299b9b278252ddba142d3f1"},
     {file = "greenlet-1.1.3-cp39-cp39-win_amd64.whl", hash = "sha256:ffe73f9e7aea404722058405ff24041e59d31ca23d1da0895af48050a07b6932"},
     {file = "greenlet-1.1.3.tar.gz", hash = "sha256:bcb6c6dd1d6be6d38d6db283747d07fda089ff8c559a835236560a4410340455"},
+]
+haversine = [
+    {file = "haversine-2.7.0-py2.py3-none-any.whl", hash = "sha256:4fdf9aebb4cc59c7de6fcb06f7afa6ab54720c5d9c91dac8c173b9213920434c"},
+    {file = "haversine-2.7.0.tar.gz", hash = "sha256:9dd62c95bff9c43eb898604625e80db68b8b9e91a5111338f55ebcf470dd5a3d"},
 ]
 html-sanitizer = [
     {file = "html_sanitizer-1.9.3-py3-none-any.whl", hash = "sha256:a2e084d0963f38116ba140e8992280acc78874044cf288f037f2ec4ba586ebe6"},
@@ -2754,6 +2808,10 @@ pluggy = [
 pre-commit = [
     {file = "pre_commit-2.21.0-py2.py3-none-any.whl", hash = "sha256:e2f91727039fc39a92f58a588a25b87f936de6567eed4f0e673e0507edc75bad"},
     {file = "pre_commit-2.21.0.tar.gz", hash = "sha256:31ef31af7e474a8d8995027fefdfcf509b5c913ff31f2015b4ec4beb26a6f658"},
+]
+prettytable = [
+    {file = "prettytable-3.5.0-py3-none-any.whl", hash = "sha256:fe391c3b545800028edf5dbb6a5360893feb398367fcc1cf8d7a5b29ce5c59a1"},
+    {file = "prettytable-3.5.0.tar.gz", hash = "sha256:52f682ba4efe29dccb38ff0fe5bac8a23007d0780ff92a8b85af64bc4fc74d72"},
 ]
 psycopg2 = [
     {file = "psycopg2-2.9.5-cp310-cp310-win32.whl", hash = "sha256:d3ef67e630b0de0779c42912fe2cbae3805ebaba30cda27fea2a3de650a9414f"},
@@ -3305,6 +3363,10 @@ sqlalchemy = [
     {file = "SQLAlchemy-1.4.45-cp39-cp39-win_amd64.whl", hash = "sha256:2d6f178ff2923730da271c8aa317f70cf0df11a4d1812f1d7a704b1cf29c5fe3"},
     {file = "SQLAlchemy-1.4.45.tar.gz", hash = "sha256:fd69850860093a3f69fefe0ab56d041edfdfe18510b53d9a2eaecba2f15fa795"},
 ]
+sqlalchemy-mate = [
+    {file = "sqlalchemy_mate-1.4.28.3-py2.py3-none-any.whl", hash = "sha256:90be4e1da67b1a266547c1cf035b546f5dcbfd374390bbf4cf746edb04fe1259"},
+    {file = "sqlalchemy_mate-1.4.28.3.tar.gz", hash = "sha256:2af60be94ca92466ae9cfbbea13bfc3f1ee500b23f8e38b237e08ef2dc4b62df"},
+]
 sqlalchemy-stubs = [
     {file = "sqlalchemy-stubs-0.4.tar.gz", hash = "sha256:c665d6dd4482ef642f01027fa06c3d5e91befabb219dc71fc2a09e7d7695f7ae"},
     {file = "sqlalchemy_stubs-0.4-py3-none-any.whl", hash = "sha256:5eec7aa110adf9b957b631799a72fef396b23ff99fe296df726645d01e312aa5"},
@@ -3423,8 +3485,8 @@ urllib3 = [
     {file = "urllib3-1.26.13.tar.gz", hash = "sha256:c083dd0dce68dbfbe1129d5271cb90f9447dea7d52097c6e0126120c521ddea8"},
 ]
 uszipcode = [
-    {file = "uszipcode-0.2.6-py2.py3-none-any.whl", hash = "sha256:f1b30034d1d634bdf440f62ef61dbe2d3d6d9021c939ff9499b15e0a779fec18"},
-    {file = "uszipcode-0.2.6.tar.gz", hash = "sha256:80072754f17675d7667345ef9f01b0195e783acbf4f43e3f1e69cfd632c64b28"},
+    {file = "uszipcode-1.0.1-py2.py3-none-any.whl", hash = "sha256:19bd1ee160e96544fbeefb624540ce342ae139462cce5465ae1dff6819cdbedc"},
+    {file = "uszipcode-1.0.1.tar.gz", hash = "sha256:c1bc2e0e47f4f4446447b6be205e76943f7978a4dcd651d4059c78002634cabb"},
 ]
 uwsgi = [
     {file = "uwsgi-2.0.21.tar.gz", hash = "sha256:35a30d83791329429bc04fe44183ce4ab512fcf6968070a7bfba42fc5a0552a9"},
@@ -3439,6 +3501,10 @@ watchtower = [
 ]
 wcag-contrast-ratio = [
     {file = "wcag-contrast-ratio-0.9.tar.gz", hash = "sha256:69192b8e5c0a7d0dc5ff1187eeb3e398141633a4bde51c69c87f58fe87ed361c"},
+]
+wcwidth = [
+    {file = "wcwidth-0.2.5-py2.py3-none-any.whl", hash = "sha256:beb4802a9cebb9144e99086eff703a642a13d6a0052920003a230f3294bbe784"},
+    {file = "wcwidth-0.2.5.tar.gz", hash = "sha256:c4d647b99872929fdb7bdcaa4fbe7f01413ed3d98077df798530e5b04f116c83"},
 ]
 werkzeug = [
     {file = "Werkzeug-1.0.1-py2.py3-none-any.whl", hash = "sha256:2de2a5db0baeae7b2d2664949077c2ac63fbd16d98da0ff71837f7d1dea3fd43"},
