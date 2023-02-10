@@ -50,45 +50,9 @@ jobs:
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v3
 
-  docker-image-build:
-    name: Docker build base
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-
-    # We want to run on external PRs, but not on our own internal PRs as they'll be run
-    # by the push to the branch. This prevents duplicated runs on internal PRs.
-    # Some discussion of this here:
-    # https://github.community/t/duplicate-checks-on-push-and-pull-request-simultaneous-event/18012
-    if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name != github.repository
-
-    steps:
-      - uses: actions/checkout@v3
-        with:
-          persist-credentials: false
-
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@v2
-
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v2
-
-      - name: Create version file
-        run: git rev-parse --short HEAD > .version
-
-      - name: Build base image
-        uses: docker/build-push-action@v4
-        with:
-          context: .
-          file: ./docker/Dockerfile
-          target: base
-          cache-to: type=gha,mode=max,scope=buildkit-${{ github.run_id }}
-          platforms: linux/amd64, linux/arm64
-
   docker-image-test:
     name: Docker test circ-${{ matrix.image }} (${{ matrix.platform }})
     runs-on: ubuntu-latest
-    needs: [docker-image-build]
     permissions:
       contents: read
     strategy:
@@ -109,9 +73,11 @@ jobs:
           POSTGRES_PASSWORD: ${{ env.POSTGRES_PASSWORD }}
           POSTGRES_DB: ${{ env.POSTGRES_DB }}
 
-    # Only push docker containers on a push event. Otherwise we won't have
-    # permissions to create the docker containers.
-    if: github.event_name == 'push'
+    # We want to run on external PRs, but not on our own internal PRs as they'll be run
+    # by the push to the branch. This prevents duplicated runs on internal PRs.
+    # Some discussion of this here:
+    # https://github.community/t/duplicate-checks-on-push-and-pull-request-simultaneous-event/18012
+    if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name != github.repository
 
     steps:
       - uses: actions/checkout@v3
@@ -124,9 +90,6 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
 
-      - name: Create version file
-        run: git rev-parse --short HEAD > .version
-
       - name: Build image
         uses: docker/build-push-action@v4
         with:
@@ -135,7 +98,7 @@ jobs:
           tags: test_image
           load: true
           target: ${{ matrix.image }}
-          cache-from: type=gha,scope=buildkit-${{ github.run_id }}
+          cache-from: type=registry,ref=ghcr.io/${{ github.repository_owner }}/circ-base:latest
           platforms: ${{ matrix.platform }}
 
       - name: Start container
@@ -162,7 +125,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        image: ["scripts", "webapp", "exec"]
+        image: ["scripts", "webapp"]
 
     steps:
       - uses: actions/checkout@v3
@@ -225,5 +188,5 @@ jobs:
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           target: ${{ matrix.image }}
-          cache-from: type=gha,scope=buildkit-${{ github.run_id }}
+          cache-from: type=registry,ref=ghcr.io/${{ github.repository_owner }}/circ-base:latest
           platforms: linux/amd64, linux/arm64

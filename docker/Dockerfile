@@ -12,7 +12,7 @@ RUN go get -v github.com/readium/readium-lcp-server/lcpencrypt
 ## Base Image
 ###############################################################################
 
-FROM phusion/baseimage:focal-1.1.0 As base
+FROM phusion/baseimage:focal-1.2.0 As base
 
 COPY --from=builder /go/bin/lcpencrypt /go/bin/lcpencrypt
 
