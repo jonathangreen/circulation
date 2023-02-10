@@ -1,0 +1,54 @@
+name: Docker Build Base
+on:
+  schedule:
+    # Every Monday at 9:05am Eastern Time
+    - cron:  '5 13 * * 1'
+  workflow_dispatch:
+
+
+jobs:
+  docker-image-build:
+    name: Docker Build Base
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          persist-credentials: false
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v2
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v2
+        with:
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Generate tags for image
+        id: meta
+        uses: docker/metadata-action@v4
+        with:
+          images: ghcr.io/${{ github.repository_owner }}/circ-base
+          tags: |
+            type=schedule,pattern={{date 'YYYYww'}}
+            type=raw,value=latest
+
+      - name: Build base image
+        uses: docker/build-push-action@v4
+        with:
+          context: .
+          file: ./docker/Dockerfile
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          push: true
+          target: base
+          cache-to: type=inline
+          platforms: linux/amd64, linux/arm64
