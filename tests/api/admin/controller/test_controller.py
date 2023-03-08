@@ -27,9 +27,9 @@ from api.admin.password_admin_authentication_provider import (
     PasswordAdminAuthenticationProvider,
 )
 from api.admin.problem_details import *
-from api.admin.routes import setup_admin
 from api.admin.validator import Validator
 from api.adobe_vendor_id import AdobeVendorIDModel, AuthdataUtility
+from api.app import setup_admin
 from api.authenticator import PatronData
 from api.axis import Axis360API, MockAxis360API
 from api.config import Configuration
