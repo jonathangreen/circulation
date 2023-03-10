@@ -29,7 +29,7 @@ from api.admin.password_admin_authentication_provider import (
 from api.admin.problem_details import *
 from api.admin.validator import Validator
 from api.adobe_vendor_id import AdobeVendorIDModel, AuthdataUtility
-from api.app import setup_admin
+from api.app import initialize_admin
 from api.authenticator import PatronData
 from api.axis import Axis360API, MockAxis360API
 from api.config import Configuration
@@ -76,7 +76,7 @@ class AdminControllerTest(CirculationControllerTest):
         ConfigurationSetting.sitewide(
             self._db, Configuration.SECRET_KEY
         ).value = "a secret"
-        setup_admin(self._db)
+        initialize_admin(self._db)
         setup_admin_controllers(self.manager)
         self.admin, ignore = create(
             self._db,
