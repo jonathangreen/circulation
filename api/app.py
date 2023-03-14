@@ -25,6 +25,7 @@ from .util.profilers import (
 app = Flask(__name__)
 
 app._db = None
+
 app.config["BABEL_DEFAULT_LOCALE"] = LanguageCodes.three_to_two[
     Configuration.localization_languages()[0]
 ]
@@ -46,16 +47,17 @@ PalaceCProfileProfiler.configure(app)
 PalaceXrayProfiler.configure(app)
 
 
-def initialize():
-    if "TESTING" not in os.environ:
-        initialize_database()
-        initialize_circulation_manager()
-        initialize_admin()
+def initialize_application() -> Flask:
+    """
+    Callable entrypoint for uwsgi
+    """
+    initialize_database()
+    initialize_circulation_manager()
+    initialize_admin()
+    return app
 
 
-def initialize_database(autoinitialize=True):
-    testing = "TESTING" in os.environ
-
+def initialize_database(autoinitialize=True, is_testing=False):
     db_url = Configuration.database_url()
     if autoinitialize:
         SessionManager.initialize(db_url)
@@ -63,7 +65,7 @@ def initialize_database(autoinitialize=True):
     _db = flask_scoped_session(session_factory, app)
     app._db = _db
 
-    log_level = LogConfiguration.initialize(_db, testing=testing)
+    log_level = LogConfiguration.initialize(_db, testing=is_testing)
     debug = log_level == "DEBUG"
     app.config["DEBUG"] = debug
     app.debug = debug
@@ -103,8 +105,6 @@ def initialize_circulation_manager():
             # setup the cache data object
             CachedData.initialize(app._db)
 
-
-initialize()
 
 from . import routes  # noqa
 from .admin import routes as admin_routes  # noqa
