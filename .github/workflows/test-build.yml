@@ -126,14 +126,28 @@ jobs:
       - name: Create version file
         run: git rev-parse --short HEAD > .version
 
-      - name: Build base image
+      - name: Build base image (with cache)
         uses: docker/build-push-action@v4
         with:
           context: .
           file: ./docker/Dockerfile
           target: base
-          cache-to: type=gha,mode=max,scope=buildkit-${{ github.run_id }}
           platforms: linux/amd64, linux/arm64
+          cache-from: type=registry,ref=ghcr.io/${{ github.repository_owner }}/circ-base
+          cache-to: type=gha,mode=max,scope=buildkit-${{ github.run_id }}
+        if: github.ref_type == 'branch' && github.ref_name != 'main'
+
+      - name: Build base image (full)
+        uses: docker/build-push-action@v4
+        with:
+          context: .
+          file: ./docker/Dockerfile
+          target: base
+          platforms: linux/amd64, linux/arm64
+          cache-to: |
+            type=gha,mode=max,scope=buildkit-${{ github.run_id }}
+            type=registry,ref=ghcr.io/${{ github.repository_owner }}/circ-base,mode=max
+        if: github.ref_type == 'tag' || github.ref_name == 'main'
 
   docker-image-test:
     name: Docker test circ-${{ matrix.image }} (${{ matrix.platform }})
