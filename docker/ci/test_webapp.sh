@@ -14,7 +14,7 @@ wait_for_runit "$container"
 
 # In a webapp container, check that nginx and uwsgi are running.
 check_service_status "$container" /etc/service/nginx
-check_service_status "$container" /home/simplified/service/uwsgi
+check_service_status "$container" /etc/service/uwsgi
 
 # Make sure the web server is running.
 healthcheck=$(docker exec "$container" curl --write-out "%{http_code}" --silent --output /dev/null http://localhost/healthcheck.html)

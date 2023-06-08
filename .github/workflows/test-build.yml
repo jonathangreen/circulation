@@ -139,7 +139,7 @@ jobs:
           context: .
           file: ./docker/Dockerfile
           target: common
-          cache-to: type=gha,mode=max,scope=buildkit-${{ github.run_id }}
+          cache-to: type=gha,mode=min,scope=buildkit-${{ github.run_id }}
           platforms: linux/amd64, linux/arm64
           build-args:
             BASE_IMAGE_ORG=${{ github.repository_owner }}/
