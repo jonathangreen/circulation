@@ -1,5 +1,15 @@
 name: Test & Build
-on: [push, pull_request]
+on:
+  push:
+    paths-ignore:
+      - '.github/workflows/build-base-image.yml'
+      - 'docker/Dockerfile.baseimage'
+      - '**.md'
+  pull_request:
+    paths-ignore:
+      - '.github/workflows/build-base-image.yml'
+      - 'docker/Dockerfile.baseimage'
+      - '**.md'
 
 concurrency:
   group: test-build-${{ github.ref_name }}-${{ github.event_name }}
@@ -97,7 +107,7 @@ jobs:
         run: tox -e "migration-docker"
 
   docker-image-build:
-    name: Docker build base
+    name: Docker build
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -123,16 +133,13 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
 
-      - name: Create version file
-        run: git rev-parse --short HEAD > .version
-
       - name: Build base image
         uses: docker/build-push-action@v4
         with:
           context: .
           file: ./docker/Dockerfile
-          target: base
-          cache-to: type=gha,mode=max,scope=buildkit-${{ github.run_id }}
+          target: common
+          cache-to: type=gha,mode=min,scope=buildkit-${{ github.run_id }}
           platforms: linux/amd64, linux/arm64
 
   docker-image-test:
@@ -159,9 +166,11 @@ jobs:
           POSTGRES_PASSWORD: ${{ env.POSTGRES_PASSWORD }}
           POSTGRES_DB: ${{ env.POSTGRES_DB }}
 
-    # Only push docker containers on a push event. Otherwise we won't have
-    # permissions to create the docker containers.
-    if: github.event_name == 'push'
+    # We want to run on external PRs, but not on our own internal PRs as they'll be run
+    # by the push to the branch. This prevents duplicated runs on internal PRs.
+    # Some discussion of this here:
+    # https://github.community/t/duplicate-checks-on-push-and-pull-request-simultaneous-event/18012
+    if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name != github.repository
 
     steps:
       - uses: actions/checkout@v3
@@ -177,9 +186,6 @@ jobs:
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
-
-      - name: Create version file
-        run: git rev-parse --short HEAD > .version
 
       - name: Build image
         uses: docker/build-push-action@v4
@@ -221,6 +227,10 @@ jobs:
       fail-fast: false
       matrix:
         image: ["scripts", "webapp", "exec"]
+
+    # Only push docker containers on a push event. Otherwise we won't have
+    # permissions to create the docker containers.
+    if: github.event_name == 'push'
 
     steps:
       - uses: actions/checkout@v3
