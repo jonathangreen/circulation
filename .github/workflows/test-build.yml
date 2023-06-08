@@ -141,6 +141,8 @@ jobs:
           target: common
           cache-to: type=gha,mode=max,scope=buildkit-${{ github.run_id }}
           platforms: linux/amd64, linux/arm64
+          build-args:
+            BASE_IMAGE_ORG=${{ github.repository_owner }}/
 
   docker-image-test:
     name: Docker test circ-${{ matrix.image }} (${{ matrix.platform }})
@@ -197,6 +199,8 @@ jobs:
           target: ${{ matrix.image }}
           cache-from: type=gha,scope=buildkit-${{ github.run_id }}
           platforms: ${{ matrix.platform }}
+          build-args:
+            BASE_IMAGE_ORG=${{ github.repository_owner }}/
 
       - name: Start container
         run: >
@@ -295,3 +299,5 @@ jobs:
           target: ${{ matrix.image }}
           cache-from: type=gha,scope=buildkit-${{ github.run_id }}
           platforms: linux/amd64, linux/arm64
+          build-args:
+            BASE_IMAGE_ORG=${{ github.repository_owner }}/
