@@ -179,7 +179,6 @@ jobs:
           target: baseimage
           cache-from: |
             type=registry,ref=${{ fromJSON(steps.baseimage-latest.outputs.json).tags[0] }}
-            type=registry,ref=${{ fromJSON(steps.baseimage-meta.outputs.json).tags[0] }}
           cache-to: |
              type=inline
           platforms: linux/amd64, linux/arm64
