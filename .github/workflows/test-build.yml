@@ -159,18 +159,14 @@ jobs:
           tags: |
             type=raw,value=latest
 
-      # If we need to push a new base image, we need to log in to the GitHub
-      # Container Registry.
       - name: Login to GitHub Container Registry
         uses: docker/login-action@v2
         with:
           registry: ghcr.io
           username: ${{ github.repository_owner }}
           password: ${{ secrets.GITHUB_TOKEN }}
-        if: steps.changes.outputs.baseimage == 'true'
 
-      # Build the base image, only if needed. We try to speed up this build by
-      # using the cache from the latest build.
+      # Build the base image, only if needed.
       - name: Build base image
         uses: docker/build-push-action@v4
         with:
@@ -188,16 +184,22 @@ jobs:
         if: steps.changes.outputs.baseimage == 'true'
 
       # If the base image was changed, we need to use the tag we just pushed
-      # to build the common image. Otherwise, we can use just use the latest
-      # tag.
+      # to build the common image. Otherwise, if the base image wasn't changed,
+      # we use the latest tag. If the local repo has a built base image, we use
+      # that, otherwise we just fall back to the main projects tag.
       - name: Set correct base-image for common image build
         id: baseimage
         run: |
-          if [ "${{ steps.changes.outputs.baseimage }}" = "true" ]; then
+          docker manifest inspect ${{ fromJSON(steps.baseimage-latest.outputs.json).tags[0] }} > /dev/null
+          tag_exists=$?
+          if [[ "${{ steps.changes.outputs.baseimage }}" == "true" ]]; then
             tag="${{ fromJSON(steps.baseimage-meta.outputs.json).tags[0] }}"
-          else
+          elif [[ $tag_exists -eq 0 ]]; then
             tag="${{ fromJSON(steps.baseimage-latest.outputs.json).tags[0] }}"
+          else
+            tag="ghcr.io/thepalaceproject/circ-baseimage:latest"
           fi
+          echo "Base image tag: $tag"
           echo tag="$tag" >> "$GITHUB_OUTPUT"
 
       - name: Build common image
