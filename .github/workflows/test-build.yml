@@ -165,6 +165,7 @@ jobs:
           registry: ghcr.io
           username: ${{ github.repository_owner }}
           password: ${{ secrets.GITHUB_TOKEN }}
+        if: steps.changes.outputs.baseimage == 'true'
 
       # Build the base image, only if needed.
       - name: Build base image
