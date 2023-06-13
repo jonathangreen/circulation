@@ -190,7 +190,7 @@ jobs:
       - name: Set correct base-image for common image build
         id: baseimage
         run: |
-          docker manifest inspect ${{ fromJSON(steps.baseimage-latest.outputs.json).tags[0] }} > /dev/null
+          docker buildx imagetools inspect ${{ fromJSON(steps.baseimage-latest.outputs.json).tags[0] }} > /dev/null
           tag_exists=$?
           if [[ "${{ steps.changes.outputs.baseimage }}" == "true" ]]; then
             tag="${{ fromJSON(steps.baseimage-meta.outputs.json).tags[0] }}"
