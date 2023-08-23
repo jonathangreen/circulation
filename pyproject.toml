@@ -204,7 +204,7 @@ pytz = "2021.3"
 pyyaml = "^6.0"
 redmail = "^0.6.0"
 requests = "^2.29"
-sqlalchemy = {version = "^1.4", extras = ["mypy"]}
+sqlalchemy = {version = "^2.0", extras = ["mypy"]}
 textblob = "0.17.1"
 types-pyopenssl = "^23.1.0.3"
 types-pyyaml = "^6.0.12.9"
