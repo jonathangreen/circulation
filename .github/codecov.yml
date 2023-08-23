@@ -14,13 +14,13 @@ comment:
 flags:
   api:
     paths:
-      - "api/**"
+      - "api"
     carryforward: true
   core:
     paths:
-      - "core/**"
+      - "core"
     carryforward: true
   migration:
     paths:
-      - "alembic/versions/**"
+      - "alembic/versions"
     carryforward: true
