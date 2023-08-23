@@ -9,4 +9,18 @@ comment:
   # Only comment when coverage changes
   require_changes: true
   # Require all builds to finish before comment is posted
-  after_n_builds: 8
+  layout: "reach, diff, flags, files"
+
+flags:
+  api:
+    paths:
+      - "api/**"
+    carryforward: true
+  core:
+    paths:
+      - "core/**"
+    carryforward: true
+  migration:
+    paths:
+      - "alembic/versions/**"
+    carryforward: true
