@@ -28,11 +28,11 @@ first_migration_file=$(find alembic/versions -name "*${first_migration_id}*.py")
 echo "First migration file: ${first_migration_file}"
 echo ""
 
-# Find the git commit before this migration file was introduced
-first_migration_parent_commit=$(git log --follow --format=%P --reverse "${first_migration_file}" | head -n 1)
+# Find the git commit where the first migration file was added
+first_migration_commit=$(git log --follow --format=%H --reverse "${first_migration_file}" | head -n 1)
 
-echo "Starting containers and initializing database at commit ${first_migration_parent_commit}"
-git checkout -q "${first_migration_parent_commit}"
+echo "Starting containers and initializing database at commit ${first_migration_commit}"
+git checkout -q "${first_migration_commit}"
 compose-cmd down
 compose-cmd up -d pg
 run_in_container "./bin/util/initialize_instance"
