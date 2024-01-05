@@ -22,7 +22,7 @@ current_branch=$(git symbolic-ref --short HEAD)
 echo "Current branch: ${current_branch}"
 
 # Find the first migration file
-first_migration_id=$(alembic history -r'base:base+1' -v | head -n 1 | cut -d ' ' -f2)
+first_migration_id=$(run_in_container alembic history -r'base:base+1' -v | head -n 1 | cut -d ' ' -f2)
 if [[ -z $first_migration_id ]]; then
   echo "ERROR: Could not find first migration."
   exit 1
