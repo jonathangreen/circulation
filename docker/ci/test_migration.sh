@@ -3,7 +3,7 @@
 run_in_container()
 {
   CMD=$1
-  docker compose --log-level ERROR run --build --rm webapp /bin/bash -c "source env/bin/activate && $CMD"
+  docker --log-level ERROR compose --progress quiet run --build --rm webapp /bin/bash -c "source env/bin/activate && $CMD"
 }
 
 if ! git diff --quiet; then
@@ -33,7 +33,7 @@ git checkout -q "${first_migration_commit}"
 
 # Start containers and initialize the database
 docker compose down
-docker compose --log-level ERROR up -d pg
+docker --log-level ERROR compose --progress quiet up -d pg
 run_in_container "./bin/util/initialize_instance"
 
 # Checkout the current commit
