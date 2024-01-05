@@ -23,11 +23,11 @@ before_migration_commit=$(git log --follow --format=%P --reverse "${first_migrat
 echo "Before migration commit: ${before_migration_commit}"
 
 # Checkout this commit
-git checkout "${before_migration_commit}"
+git checkout -q "${before_migration_commit}"
 
 # Start containers and initialize the database
 docker-compose up -d pg
-export SIMPLIFIED_PRODUCTION_DATABASE="postgresql://palace:test@pg:5432/circ"
+export SIMPLIFIED_PRODUCTION_DATABASE="postgresql://palace:test@localhost:5432/circ"
 bin/util/initialize_instance
 
 # Checkout the current commit
