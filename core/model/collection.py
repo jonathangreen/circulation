@@ -76,7 +76,7 @@ class Collection(Base, HasSessionCache):
     # ordinary Overdrive collection. It uses the same access key and
     # secret as the Overdrive collection, but it has a distinct
     # external_account_id.
-    parent_id = Column(Integer, ForeignKey("collections.id"), index=True)
+    parent_id = Column(Integer, ForeignKey("collections.id"), index=False)
     parent: Collection = relationship(
         "Collection", remote_side=[id], back_populates="children"
     )
