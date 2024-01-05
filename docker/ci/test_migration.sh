@@ -26,29 +26,36 @@ first_migration_id=$(alembic history -r'base:base+1' -v | head -n 1 | cut -d ' '
 first_migration_file=$(find alembic/versions -name "*${first_migration_id}*.py")
 
 echo "First migration file: ${first_migration_file}"
+echo ""
 
-# Find the git commit where this migration was introduced
-first_migration_commit=$(git log --follow --format=%H --reverse "${first_migration_file}" | head -n 1)
+# Find the git commit before this migration file was introduced
+first_migration_parent_commit=$(git log --follow --format=%P --reverse "${first_migration_file}" | head -n 1)
 
-echo "First migration commit: ${first_migration_commit}"
-
-# Checkout this commit
-git checkout -q "${first_migration_commit}"
-
-# Start containers and initialize the database
+echo "Starting containers and initializing database at commit ${first_migration_parent_commit}"
+git checkout -q "${first_migration_parent_commit}"
 compose-cmd down
 compose-cmd up -d pg
 run_in_container "./bin/util/initialize_instance"
-
-# Checkout the current commit
-git checkout "${current_branch}"
+echo ""
 
 # Migrate up to the current commit and check if the database is in sync
-run_in_container "alembic upgrade head && alembic check"
+git checkout -q "${current_branch}"
+echo "Running database migrations on branch ${current_branch}"
+run_in_container "alembic upgrade head"
 exit_code=$?
+if [[ $exit_code -ne 0 ]]; then
+  echo "ERROR: Database migration failed."
+  exit $exit_code
+fi
+echo ""
+
+echo "Checking database status"
+run_in_container "alembic check"
+exit_code=$?
+echo ""
 
 if [[ $exit_code -eq 0 ]]; then
-  echo "Database is in sync."
+  echo "SUCCESS: Database is in sync."
 else
   echo "ERROR: Database is out of sync. A new migration is required."
 fi
