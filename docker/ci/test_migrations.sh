@@ -31,7 +31,7 @@ if ! git diff --quiet; then
 fi
 
 # Find the currently checked out branch
-current_branch=$(git symbolic-ref --short HEAD)
+current_branch=$(git symbolic-ref -q --short HEAD)
 current_branch_exit_code=$?
 
 # If we are not on a branch, then we are in a detached HEAD state, so
