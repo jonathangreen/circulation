@@ -6,8 +6,7 @@ compose_cmd() {
 
 run_in_container()
 {
-  CMD=$1
-  compose_cmd run --build --rm webapp /bin/bash -c "source env/bin/activate && $CMD"
+  compose_cmd run --build --rm webapp /bin/bash -c "source env/bin/activate && $*"
 }
 
 if ! git diff --quiet; then
