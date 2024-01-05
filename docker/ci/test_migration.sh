@@ -3,7 +3,7 @@
 run_in_container()
 {
   CMD=$1
-  docker compose run --quiet-pull --build --rm webapp /bin/bash -c "source env/bin/activate && $CMD"
+  docker compose --log-level ERROR run --build --rm webapp /bin/bash -c "source env/bin/activate && $CMD"
 }
 
 if ! git diff --quiet; then
@@ -12,7 +12,7 @@ if ! git diff --quiet; then
   exit 1
 fi
 
-# Find the currently checked out commit
+# Find the currently checked out branch
 current_branch=$(git symbolic-ref --short HEAD)
 
 echo "Current branch: ${current_branch}"
@@ -33,7 +33,7 @@ git checkout -q "${first_migration_commit}"
 
 # Start containers and initialize the database
 docker compose down
-docker compose up -d --quiet-pull pg
+docker compose --log-level ERROR up -d pg
 run_in_container "./bin/util/initialize_instance"
 
 # Checkout the current commit
@@ -46,7 +46,7 @@ exit_code=$?
 if [[ $exit_code -eq 0 ]]; then
   echo "Database is in sync."
 else
-  echo "ERROR: Database is out of sync. Please generate an alembic migration."
+  echo "ERROR: Database is out of sync. A new migration is required."
 fi
 
 # Stop containers
