@@ -22,7 +22,7 @@ current_branch=$(git symbolic-ref --short HEAD)
 echo "Current branch: ${current_branch}"
 
 # Find the first migration file
-first_migration_id=$(run_in_container alembic history -r'base:base+1' -v | head -n 1 | cut -d ' ' -f2)
+first_migration_id=$(alembic history -r'base:base+1' -v | head -n 1 | cut -d ' ' -f2)
 first_migration_file=$(find alembic/versions -name "*${first_migration_id}*.py")
 
 echo "First migration file: ${first_migration_file}"
