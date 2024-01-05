@@ -41,3 +41,15 @@ git checkout "${current_branch}"
 
 # Migrate up to the current commit and check if the database is in sync
 run_in_container "alembic upgrade head && alembic check"
+exit_code=$?
+
+if [[ $exit_code -eq 0 ]]; then
+  echo "Database is in sync."
+else
+  echo "ERROR: Database is out of sync. Please generate an alembic migration."
+fi
+
+# Stop containers
+docker compose down
+
+exit $exit_code
