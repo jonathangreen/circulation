@@ -135,14 +135,6 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-      - name: Install Poetry
-        uses: ./.github/actions/poetry
-
-      - name: Poetry install
-        run: poetry install
-        env:
-          POETRY_VIRTUALENVS_CREATE: false
-
       - name: Test migrations
         run: ./docker/ci/test_migrations.sh
 

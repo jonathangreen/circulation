@@ -1,4 +1,19 @@
-#!/bin/bash -x
+#!/bin/bash
+
+# This script makes sure that our database migrations bring the database up to date
+# so that the resulting database is the same as if we had initialized a new instance.
+#
+# This is done by checking out the an older version of our codebase. The commit when
+# the first migration was added and initializing a new instance. Then we check out
+# the current version of our codebase and run the migrations. If the database is in
+# sync, then the migrations are up to date. If the database is out of sync, then
+# a new migration is required.
+#
+# This test is cannot be added to the normal migration test suite since it requires
+# manipulating the git history and checking out older versions of the codebase.
+#
+# All of the commands in this script are run inside a docker-compose environment.
+
 
 compose_cmd() {
   docker --log-level ERROR compose --progress quiet "$@"
