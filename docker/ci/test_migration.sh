@@ -1,5 +1,11 @@
 #!/bin/bash
 
+run_in_container()
+{
+  CMD=$1
+  docker compose run --quiet-pull --build --rm webapp /bin/bash -c "source env/bin/activate && $CMD"
+}
+
 if ! git diff --quiet; then
   echo "ERROR: You have uncommitted changes. These changes will be lost if you run this script."
   echo "  Please commit or stash your changes and try again."
@@ -26,15 +32,11 @@ echo "First migration commit: ${first_migration_commit}"
 git checkout -q "${first_migration_commit}"
 
 # Start containers and initialize the database
-docker-compose up -d --pull-quiet pg
-export SIMPLIFIED_PRODUCTION_DATABASE="postgresql://palace:test@localhost:5432/circ"
-bin/util/initialize_instance
+docker compose up -d --quiet-pull pg
+run_in_container "./bin/util/initialize_instance"
 
 # Checkout the current commit
 git checkout "${current_branch}"
 
-# Migrate up to the current commit
-alembic upgrade head
-
-# Now check that the database matches what we would expect
-alembic check
+# Migrate up to the current commit and check if the database is in sync
+run_in_container "alembic upgrade head && alembic check"
