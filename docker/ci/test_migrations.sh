@@ -32,12 +32,13 @@ fi
 
 # Find the currently checked out branch
 current_branch=$(git symbolic-ref --short HEAD)
+current_branch_exit_code=$?
 
 # If we are not on a branch, then we are in a detached HEAD state, so
 # we use the commit hash instead. This happens in CI when being run
 # against a PR instead of a branch.
 # See: https://stackoverflow.com/questions/69935511/how-do-i-save-the-current-head-so-i-can-check-it-back-out-in-the-same-way-later
-if [[ -z $? ]]; then
+if [[ $current_branch_exit_code -ne 0 ]]; then
   current_branch=$(git rev-parse HEAD)
 fi
 
