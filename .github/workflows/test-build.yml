@@ -143,6 +143,9 @@ jobs:
         env:
           POETRY_VIRTUALENVS_CREATE: false
 
+      - name: Test migrations
+        run: ./docker/ci/test_migrations.sh
+
   docker-image-build:
     name: Docker build
     runs-on: ubuntu-latest

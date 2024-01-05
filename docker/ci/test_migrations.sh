@@ -23,7 +23,16 @@ echo "Current branch: ${current_branch}"
 
 # Find the first migration file
 first_migration_id=$(alembic history -r'base:base+1' -v | head -n 1 | cut -d ' ' -f2)
+if [[ -z $first_migration_id ]]; then
+  echo "ERROR: Could not find first migration."
+  exit 1
+fi
+
 first_migration_file=$(find alembic/versions -name "*${first_migration_id}*.py")
+if [[ -z $first_migration_file ]]; then
+  echo "ERROR: Could not find first migration file."
+  exit 1
+fi
 
 echo "First migration file: ${first_migration_file}"
 echo ""
