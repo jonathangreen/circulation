@@ -7,9 +7,9 @@ if ! git diff --quiet; then
 fi
 
 # Find the currently checked out commit
-current_commit=$(git show -s --format=%H)
+current_branch=$(git symbolic-ref --short HEAD)
 
-echo "Current commit: ${current_commit}"
+echo "Current branch: ${current_branch}"
 
 # Find the first migration file
 first_migration_id=$(alembic history -r'base:base+1' -v | head -n 1 | cut -d ' ' -f2)
@@ -31,7 +31,7 @@ export SIMPLIFIED_PRODUCTION_DATABASE="postgresql://palace:test@localhost:5432/c
 bin/util/initialize_instance
 
 # Checkout the current commit
-git checkout "${current_commit}"
+git checkout "${current_branch}"
 
 # Migrate up to the current commit
 alembic upgrade head
