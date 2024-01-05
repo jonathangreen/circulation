@@ -1,13 +1,13 @@
 #!/bin/bash
 
-compose-cmd() {
+compose_cmd() {
   docker --log-level ERROR compose --progress quiet "$@"
 }
 
 run_in_container()
 {
   CMD=$1
-  compose-cmd run --build --rm webapp /bin/bash -c "source env/bin/activate && $CMD"
+  compose_cmd run --build --rm webapp /bin/bash -c "source env/bin/activate && $CMD"
 }
 
 if ! git diff --quiet; then
@@ -22,7 +22,7 @@ current_branch=$(git symbolic-ref --short HEAD)
 echo "Current branch: ${current_branch}"
 
 # Find the first migration file
-first_migration_id=$(alembic history -r'base:base+1' -v | head -n 1 | cut -d ' ' -f2)
+first_migration_id=$(run_in_container alembic history -r'base:base+1' -v | head -n 1 | cut -d ' ' -f2)
 first_migration_file=$(find alembic/versions -name "*${first_migration_id}*.py")
 
 echo "First migration file: ${first_migration_file}"
@@ -33,8 +33,8 @@ first_migration_commit=$(git log --follow --format=%H --reverse "${first_migrati
 
 echo "Starting containers and initializing database at commit ${first_migration_commit}"
 git checkout -q "${first_migration_commit}"
-compose-cmd down
-compose-cmd up -d pg
+compose_cmd down
+compose_cmd up -d pg
 run_in_container "./bin/util/initialize_instance"
 echo ""
 
@@ -61,6 +61,6 @@ else
 fi
 
 # Stop containers
-compose-cmd down
+compose_cmd down
 
 exit $exit_code
