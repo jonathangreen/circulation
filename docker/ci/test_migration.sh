@@ -32,6 +32,7 @@ echo "First migration commit: ${first_migration_commit}"
 git checkout -q "${first_migration_commit}"
 
 # Start containers and initialize the database
+docker compose down
 docker compose up -d --quiet-pull pg
 run_in_container "./bin/util/initialize_instance"
 
