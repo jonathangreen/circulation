@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -x
 
 compose_cmd() {
   docker --log-level ERROR compose --progress quiet "$@"
