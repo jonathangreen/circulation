@@ -17,16 +17,16 @@ first_migration_file=$(find alembic/versions -name "*${first_migration_id}*.py")
 
 echo "First migration file: ${first_migration_file}"
 
-# Find the git commit before the first migration file was added
-before_migration_commit=$(git log --follow --format=%P --reverse "${first_migration_file}" | head -n 1)
+# Find the git commit where this migration was introduced
+first_migration_commit=$(git log --follow --format=%H --reverse "${first_migration_file}" | head -n 1)
 
-echo "Before migration commit: ${before_migration_commit}"
+echo "First migration commit: ${first_migration_commit}"
 
 # Checkout this commit
-git checkout -q "${before_migration_commit}"
+git checkout -q "${first_migration_commit}"
 
 # Start containers and initialize the database
-docker-compose up -d pg
+docker-compose up -d --pull-quiet pg
 export SIMPLIFIED_PRODUCTION_DATABASE="postgresql://palace:test@localhost:5432/circ"
 bin/util/initialize_instance
 
