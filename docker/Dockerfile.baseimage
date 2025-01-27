@@ -13,6 +13,9 @@
 # https://github.com/phusion/baseimage-docker
 FROM phusion/baseimage:jammy-1.0.1 AS baseimage
 
+# Debugging weird CI crash
+ENV QEMU_STRACE=1
+
 # Make sure base system is up to date
 RUN apt-get update && \
     apt-get upgrade -y --no-install-recommends -o Dpkg::Options::="--force-confold" && \
