@@ -9,6 +9,9 @@ container="$1"
 dir=$(dirname "${BASH_SOURCE[0]}")
 source "${dir}/check_service_status.sh"
 
+# Output the version file for debugging
+docker compose exec "$container" cat /var/www/simplified/_version.py
+
 # Wait for container to start
 wait_for_runit "$container"
 

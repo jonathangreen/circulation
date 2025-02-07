@@ -100,7 +100,7 @@ run_in_container()
   local CONTAINER_NAME=$1
   shift 1
   debug_echo "+" "$@"
-  compose_cmd run --build --rm --no-deps "${CONTAINER_NAME}" /bin/bash -c "source env/bin/activate && $*"
+  compose_cmd run --rm --no-deps "${CONTAINER_NAME}" /bin/bash -c "source env/bin/activate && $*"
 }
 
 # Cleanup any running containers
