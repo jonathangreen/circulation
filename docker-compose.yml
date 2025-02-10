@@ -50,7 +50,7 @@ services:
     build:
       <<: *cm-build
       target: webapp
-    image: "${WEBAPP_IMAGE-ghcr.io/thepalaceproject/circ-webapp:latest}"
+    image: "${WEBAPP_IMAGE-}"
     ports:
       - "6500:80"
 
@@ -59,7 +59,7 @@ services:
     build:
       <<: *cm-build
       target: scripts
-    image: "${SCRIPTS_IMAGE-ghcr.io/thepalaceproject/circ-scripts:latest}"
+    image: "${SCRIPTS_IMAGE-}"
 
   pg:
     image: "postgres:16"
