@@ -16,7 +16,7 @@ docker compose exec "$container" cat /var/www/circulation/src/palace/manager/_ve
 wait_for_runit "$container"
 
 # Make sure database initialization completed successfully
-timeout 240s grep -q 'Initialization complete' <(docker compose logs "$container" -f 2>&1)
+timeout 240s grep -q -e 'Initialization complete' -e "Migrations complete" <(docker compose logs "$container" -f 2>&1)
 
 # Make sure that cron is running in the scripts container
 check_service_status "$container" /etc/service/cron
