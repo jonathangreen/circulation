@@ -69,12 +69,15 @@ jobs:
           webapp="ghcr.io/$repo/circ-webapp"
           scripts="ghcr.io/$repo/circ-scripts"
           exec="ghcr.io/$repo/circ-exec"
+          baseimage="ghcr.io/$repo/circ-baseimage"
           echo "webapp=$webapp"
           echo "webapp=$webapp" >> "$GITHUB_OUTPUT"
           echo "scripts=$scripts"
           echo "scripts=$scripts" >> "$GITHUB_OUTPUT"
           echo "exec=$exec"
           echo "exec=$exec" >> "$GITHUB_OUTPUT"
+          echo "baseimage=$baseimage"
+          echo "baseimage=$baseimage" >> "$GITHUB_OUTPUT"
 
       # See comment here: https://github.com/actions/runner-images/issues/1187#issuecomment-686735760
       - name: Disable network offload
