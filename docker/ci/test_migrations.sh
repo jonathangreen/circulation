@@ -140,6 +140,11 @@ check_db() {
   success "Database is in sync."
 }
 
+# Output the version file for debugging
+gh_group "Version file"
+run_in_container "webapp" cat /var/www/circulation/src/palace/manager/_version.py
+gh_endgroup
+
 # Find all the info we need about the first migration in the git history.
 gh_group "Finding first migration"
 run_in_container "webapp" alembic history -r'base:base+1' -v
