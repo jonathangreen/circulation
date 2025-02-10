@@ -347,6 +347,7 @@ jobs:
         run: >
           docker compose run webapp
           bash -c "
+            cat src/palace/manager/_version.py &&
             source env/bin/activate &&
             poetry install --without ci --no-root --sync &&
             pytest --no-cov tests
