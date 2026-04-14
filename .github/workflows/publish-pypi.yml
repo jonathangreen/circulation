@@ -75,7 +75,7 @@ jobs:
         # in the wheel metadata.
         run: |
           cat > ${{ matrix.source_dir }}/_version.py <<EOF
-          __version__: str = "${{ steps.version.outputs.version }}"
+          __version__ = "${{ steps.version.outputs.version }}"
           __commit__: str | None = "${{ steps.version.outputs.commit }}"
           __branch__: str | None = "${{ steps.version.outputs.branch }}"
           EOF

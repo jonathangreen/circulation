@@ -23,8 +23,6 @@ packages = ["src/palace"]
 
 [tool.hatch.version]
 path = "src/palace/util/_version.py"
-pattern = '__version__: str = "(?P<version>[^"]+)"'
-source = "regex"
 
 [tool.isort]
 combine_as_imports = true
