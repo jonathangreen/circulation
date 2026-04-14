@@ -1,0 +1,99 @@
+name: Publish to PyPI
+
+# Publishes `palace-util` and `palace-opds` to PyPI when a GitHub Release is
+# published. Each package is built and uploaded independently via PyPI's
+# Trusted Publishing (OIDC) flow — no API tokens are stored.
+#
+# One-time setup on PyPI (for each of the two projects, palace-util and
+# palace-opds):
+#
+#   1. Create the project on PyPI.
+#   2. In the project's "Publishing" settings, add a trusted publisher:
+#        - Owner:             ThePalaceProject
+#        - Repository:        circulation
+#        - Workflow filename: publish-pypi.yml
+#        - Environment name:  pypi
+#   3. (Optional) Create the `pypi` environment on this repo under
+#      Settings → Environments, and restrict it to protected branches /
+#      required reviewers for an approval gate before release.
+#
+# No action is needed on new releases beyond publishing a GitHub Release with
+# a tag that dunamai can parse as semver (e.g. `v1.0.0` or `1.0.0`).
+
+on:
+  release:
+    types: [published]
+
+env:
+  PYTHON_VERSION: "3.12"
+
+jobs:
+  publish:
+    name: Publish ${{ matrix.package }} to PyPI
+    runs-on: ubuntu-24.04
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - package: palace-util
+            source_dir: packages/palace-util/src/palace/util
+          - package: palace-opds
+            source_dir: packages/palace-opds/src/palace/opds
+    environment:
+      name: pypi
+      url: https://pypi.org/p/${{ matrix.package }}
+    permissions:
+      # Required for PyPI Trusted Publishing (OIDC).
+      id-token: write
+      contents: read
+
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+          # dunamai needs the full tag history.
+          fetch-depth: 0
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v8.0.0
+        with:
+          enable-cache: true
+          cache-dependency-glob: uv.lock
+          python-version: ${{ env.PYTHON_VERSION }}
+          activate-environment: true
+
+      - name: Compute version metadata
+        id: version
+        run: |
+          echo "version=$(uv run --only-group ci dunamai from git --style semver)" >> "$GITHUB_OUTPUT"
+          echo "commit=$(uv run --only-group ci dunamai from git --format '{commit}' --full-commit)" >> "$GITHUB_OUTPUT"
+          echo "branch=$(uv run --only-group ci dunamai from git --format '{branch}')" >> "$GITHUB_OUTPUT"
+
+      - name: Write _version.py
+        # hatch reads __version__ from this file via [tool.hatch.version]
+        # regex source; overwriting it here is how the release version lands
+        # in the wheel metadata.
+        run: |
+          cat > ${{ matrix.source_dir }}/_version.py <<EOF
+          __version__: str = "${{ steps.version.outputs.version }}"
+          __commit__: str | None = "${{ steps.version.outputs.commit }}"
+          __branch__: str | None = "${{ steps.version.outputs.branch }}"
+          EOF
+
+      - name: Pin intra-workspace dependency
+        # uv build preserves workspace deps as bare names in Requires-Dist
+        # (e.g. `palace-util` with no version). For PyPI we need an exact pin
+        # so a consumer installing palace-opds resolves the matching
+        # palace-util version.
+        if: matrix.package == 'palace-opds'
+        run: |
+          sed -i 's|"palace-util"|"palace-util==${{ steps.version.outputs.version }}"|' \
+            packages/palace-opds/pyproject.toml
+
+      - name: Build ${{ matrix.package }}
+        run: uv build --package ${{ matrix.package }}
+
+      - name: Publish to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          packages-dir: dist
