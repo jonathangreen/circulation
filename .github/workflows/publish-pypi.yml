@@ -84,11 +84,12 @@ jobs:
         # uv build preserves workspace deps as bare names in Requires-Dist
         # (e.g. `palace-util` with no version). For PyPI we need an exact pin
         # so a consumer installing palace-opds resolves the matching
-        # palace-util version.
+        # palace-util version. `uv add` rewrites the dependency spec in
+        # palace-opds/pyproject.toml safely (no text-match fragility) — and
+        # resolves against the workspace source, so it doesn't matter that
+        # the pinned version isn't on PyPI yet.
         if: matrix.package == 'palace-opds'
-        run: |
-          sed -i 's|"palace-util"|"palace-util==${{ steps.version.outputs.version }}"|' \
-            packages/palace-opds/pyproject.toml
+        run: uv add --package palace-opds "palace-util==${{ steps.version.outputs.version }}"
 
       - name: Build ${{ matrix.package }}
         run: uv build --package ${{ matrix.package }}
