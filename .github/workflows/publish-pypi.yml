@@ -1,21 +1,9 @@
 name: Publish to PyPI
 
-# Publishes `palace-util` and `palace-opds` to PyPI when a GitHub Release is
+
+# Publishes `palace-util` and `palace-opds` when a GitHub Release is
 # published. Each package is built and uploaded independently via PyPI's
 # Trusted Publishing (OIDC) flow — no API tokens are stored.
-#
-# One-time setup on PyPI (for each of the two projects, palace-util and
-# palace-opds):
-#
-#   1. Create the project on PyPI.
-#   2. In the project's "Publishing" settings, add a trusted publisher:
-#        - Owner:             ThePalaceProject
-#        - Repository:        circulation
-#        - Workflow filename: publish-pypi.yml
-#        - Environment name:  pypi
-#   3. (Optional) Create the `pypi` environment on this repo under
-#      Settings → Environments, and restrict it to protected branches /
-#      required reviewers for an approval gate before release.
 #
 # No action is needed on new releases beyond publishing a GitHub Release with
 # a tag that dunamai can parse as semver (e.g. `v1.0.0` or `1.0.0`).
@@ -39,9 +27,6 @@ jobs:
             source_dir: packages/palace-util/src/palace/util
           - package: palace-opds
             source_dir: packages/palace-opds/src/palace/opds
-    environment:
-      name: pypi
-      url: https://pypi.org/p/${{ matrix.package }}
     permissions:
       # Required for PyPI Trusted Publishing (OIDC).
       id-token: write
@@ -62,12 +47,15 @@ jobs:
           python-version: ${{ env.PYTHON_VERSION }}
           activate-environment: true
 
+      - name: Install Dunamai
+        run: uv sync --frozen --only-group ci
+
       - name: Compute version metadata
         id: version
         run: |
-          echo "version=$(uv run --only-group ci dunamai from git --style semver)" >> "$GITHUB_OUTPUT"
-          echo "commit=$(uv run --only-group ci dunamai from git --format '{commit}' --full-commit)" >> "$GITHUB_OUTPUT"
-          echo "branch=$(uv run --only-group ci dunamai from git --format '{branch}')" >> "$GITHUB_OUTPUT"
+          echo "version=$(dunamai from git --style semver)" >> "$GITHUB_OUTPUT"
+          echo "commit=$(dunamai from git --format '{commit}' --full-commit)" >> "$GITHUB_OUTPUT"
+          echo "branch=$(dunamai from git --format '{branch}')" >> "$GITHUB_OUTPUT"
 
       - name: Write _version.py
         # hatch reads __version__ from this file via [tool.hatch.version]
@@ -84,10 +72,7 @@ jobs:
         # uv build preserves workspace deps as bare names in Requires-Dist
         # (e.g. `palace-util` with no version). For PyPI we need an exact pin
         # so a consumer installing palace-opds resolves the matching
-        # palace-util version. `uv add` rewrites the dependency spec in
-        # palace-opds/pyproject.toml safely (no text-match fragility) — and
-        # resolves against the workspace source, so it doesn't matter that
-        # the pinned version isn't on PyPI yet.
+        # palace-util version.
         if: matrix.package == 'palace-opds'
         run: uv add --package palace-opds "palace-util==${{ steps.version.outputs.version }}"
 
@@ -98,3 +83,6 @@ jobs:
         uses: pypa/gh-action-pypi-publish@release/v1
         with:
           packages-dir: dist
+          repository-url: https://test.pypi.org/legacy/
+          verbose: true
+          print-hash: true
