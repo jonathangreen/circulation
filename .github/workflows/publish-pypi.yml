@@ -1,9 +1,8 @@
 name: Publish to PyPI
 
-
 # Publishes `palace-util` and `palace-opds` when a GitHub Release is
 # published. Each package is built and uploaded independently via PyPI's
-# Trusted Publishing (OIDC) flow — no API tokens are stored.
+# Trusted Publishing (OIDC) flow.
 #
 # No action is needed on new releases beyond publishing a GitHub Release with
 # a tag that dunamai can parse as semver (e.g. `v1.0.0` or `1.0.0`).
@@ -55,7 +54,6 @@ jobs:
         run: |
           echo "version=$(dunamai from git --style semver)" >> "$GITHUB_OUTPUT"
           echo "commit=$(dunamai from git --format '{commit}' --full-commit)" >> "$GITHUB_OUTPUT"
-          echo "branch=$(dunamai from git --format '{branch}')" >> "$GITHUB_OUTPUT"
 
       - name: Write _version.py
         # hatch reads __version__ from this file via [tool.hatch.version]
@@ -65,7 +63,6 @@ jobs:
           cat > ${{ matrix.source_dir }}/_version.py <<EOF
           __version__ = "${{ steps.version.outputs.version }}"
           __commit__: str | None = "${{ steps.version.outputs.commit }}"
-          __branch__: str | None = "${{ steps.version.outputs.branch }}"
           EOF
 
       - name: Pin intra-workspace dependency
