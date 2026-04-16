@@ -1,6 +1,6 @@
 Post line-specific findings as inline comments via
 `mcp__github_inline_comment__create_inline_comment` (with `confirmed: true`) —
-do not collapse them into the sticky summary.
+do not collapse them into the summary.
 
 Prefix each inline comment by severity:
 
@@ -11,7 +11,9 @@ Prefix each inline comment by severity:
 
 Skip formatting and style findings entirely — pre-commit handles those.
 
-Your sticky review comment is the OVERALL summary, not a restatement of the
-inline comments: give a high-level take and flag cross-cutting concerns only.
-Do not repeat anything already covered inline. It should be succinct, one or two
-paragraphs maximum.
+Your summary is the OVERALL summary, not a restatement of the  inline comments:
+give a high-level take and flag cross-cutting concerns only. DO NOT repeat anything
+already covered inline. It should be succinct, one paragraph maximum.
+
+If there is an existing summary comment, you should update it, rather than polluting
+the thread by posting a new comment.
