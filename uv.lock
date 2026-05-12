@@ -2290,7 +2290,7 @@ dev = [
     { name = "pytest-timeout" },
     { name = "pytest-xdist", specifier = ">=3.5.0,<4" },
     { name = "requests-mock", specifier = "==1.12.1" },
-    { name = "types-aws-xray-sdk", specifier = "==2.15.0.20260408" },
+    { name = "types-aws-xray-sdk", specifier = "==2.15.0.20260508" },
     { name = "types-croniter", specifier = ">=6.2.2.20260508,<7" },
     { name = "types-flask-cors", specifier = ">=6.0.0,<7" },
     { name = "types-openpyxl", specifier = ">=3.1,<4" },
@@ -3647,11 +3647,11 @@ wheels = [
 
 [[package]]
 name = "types-aws-xray-sdk"
-version = "2.15.0.20260408"
+version = "2.15.0.20260508"
 source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/0e/f1/0a9b87acbcd1929737f8bbfe54a6e64ec4929f95f843b33d7c37100662fe/types_aws_xray_sdk-2.15.0.20260408.tar.gz", hash = "sha256:045506c6d627765eaac0a82169f267433a172b3574b6a9c62df7131147aa8d13", size = 24482, upload-time = "2026-04-08T04:31:01.421Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/f9/1b/eacadcb8eecbb633c1d1630878067d177d7cfad6436f46f32dd26841b92a/types_aws_xray_sdk-2.15.0.20260508.tar.gz", hash = "sha256:95b8877115ea687585b472adeeec577f0054de7dc3a10fbf68f1ee2a23f0d511", size = 24544, upload-time = "2026-05-08T04:48:38.097Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/e3/6f/8904fad7f8125975dce2ebce3ae9419e6855034747557e7f9cd908fc555d/types_aws_xray_sdk-2.15.0.20260408-py3-none-any.whl", hash = "sha256:0a2cc200d1fa805170ed6f3aa7dccc1c7b70144e24c2bedcf4bc66c4c54525bd", size = 44784, upload-time = "2026-04-08T04:31:00.171Z" },
+    { url = "https://files.pythonhosted.org/packages/79/18/c17f5627a978b54bc71e99a87e4a24b6411e18a108c4633f5031cd4e3ce8/types_aws_xray_sdk-2.15.0.20260508-py3-none-any.whl", hash = "sha256:81516963c07047b2c2f802f14abe3e183fe589a3a01f0cd5a639fcc6fafb1794", size = 44779, upload-time = "2026-05-08T04:48:37.162Z" },
 ]
 
 [[package]]
