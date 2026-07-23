@@ -2269,7 +2269,7 @@ requires-dist = [
     { name = "simpleeval", specifier = ">=1.0.3,<2" },
     { name = "sqlalchemy", extras = ["mypy"], specifier = ">=2.0.51,<3" },
     { name = "tenacity", specifier = ">=9.0.0,<10" },
-    { name = "textblob", specifier = "==0.20.0" },
+    { name = "textblob", specifier = "==0.20.1" },
     { name = "types-pyopenssl", specifier = ">=24.0.0.20240130,<25" },
     { name = "types-pyyaml", specifier = ">=6.0.12.20260518,<7" },
     { name = "unicodecsv", specifier = "==0.14.1" },
@@ -3556,14 +3556,14 @@ wheels = [
 
 [[package]]
 name = "textblob"
-version = "0.20.0"
+version = "0.20.1"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "nltk" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/8b/c0/b7f426679211e965f8bf6b65e5eafeda51842502a6ae989b9616895d5fb5/textblob-0.20.0.tar.gz", hash = "sha256:ae9bef3a16cecb4aae3e995cc8c6fe98a9d2a6ffdd58990dcd68e817e8d66b9e", size = 639377, upload-time = "2026-04-01T13:50:20.975Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/b9/36/bea92e52a9c2b2e73c0507b1f47f5d5378a300131811e585780e19005b98/textblob-0.20.1.tar.gz", hash = "sha256:fbd1a3307532e9dddb8f50284874559e01020e79b5fe5ae4c1da709a9e2087ea", size = 639537, upload-time = "2026-07-18T17:42:29.826Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/b9/6e/d487f271c30700354f55b5e56339f38942ab3cb9b6f1464288e252ae3fef/textblob-0.20.0-py3-none-any.whl", hash = "sha256:f32e5240a17a98a8d026cdf7add8f5e0c7d4f1f2e91dad77bc9493e5ab3c6bd5", size = 624962, upload-time = "2026-04-01T13:50:19.423Z" },
+    { url = "https://files.pythonhosted.org/packages/6b/7f/f4c3c1f86d80d76de7e94b1ed6d2712bd541bf4d0579cab34d20b39a7706/textblob-0.20.1-py3-none-any.whl", hash = "sha256:f957699169a3e7b9a03a504883111b7b6973679496b9af959db2f74ee2449977", size = 624989, upload-time = "2026-07-18T17:42:28.261Z" },
 ]
 
 [[package]]
