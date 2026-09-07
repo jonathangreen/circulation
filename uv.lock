@@ -1491,15 +1491,15 @@ wheels = [
 
 [[package]]
 name = "jwcrypto"
-version = "1.5.8"
+version = "1.6.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "cryptography" },
     { name = "typing-extensions" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/de/7e/53c14813521693e931e420d9db00efe317419ff194495903bce03402275e/jwcrypto-1.5.8.tar.gz", hash = "sha256:c3d7114b6f6e65b52f6b7da817eb8cb8423e1da31e1ef13508447c81ecbdcc34", size = 90772, upload-time = "2026-06-24T19:36:50.782Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/2a/f6/e5bede9abf478b463100b089bf0631fe84542e3e43418f1e99dd16928b95/jwcrypto-1.6.0.tar.gz", hash = "sha256:02a82b0a3a36b2553309d78c65e1c0e3350b640fe4091f53f66f582b11f49378", size = 116186, upload-time = "2026-09-01T13:09:45.153Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/6e/7c/f87c5db042c4f7b4476346fc0d22f1025a777fee08eebde3720d3b9c4eb5/jwcrypto-1.5.8-py3-none-any.whl", hash = "sha256:85aeb475f808d56bbc2f2ed1f6f73e6a317c4011a4321505f02f0aed695a3742", size = 96133, upload-time = "2026-06-24T19:36:49.519Z" },
+    { url = "https://files.pythonhosted.org/packages/48/c2/e97fbec034d597c829cb915c227135b87dbff3ee5a9570664d23e1fa7db8/jwcrypto-1.6.0-py3-none-any.whl", hash = "sha256:09ece277d48620079c90af7dfe84be085a229c1cbe06baa295de41e5019ac998", size = 121184, upload-time = "2026-09-01T13:09:43.911Z" },
 ]
 
 [[package]]
